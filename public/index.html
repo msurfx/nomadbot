@@ -457,6 +457,30 @@ body::after {
   white-space: nowrap;
   padding-top: 2px;
 }
+.panel-collapse {
+  width: 28px; height: 28px;
+  margin-left: 8px;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.14);
+  background: rgba(255,255,255,0.03);
+  color: var(--text-dim);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s, color 0.15s, background 0.15s;
+  flex-shrink: 0;
+  padding: 0;
+}
+.panel-collapse:hover { color: var(--text); background: rgba(255,255,255,0.08); }
+.panel-collapse:focus-visible { outline: 2px solid var(--purple); outline-offset: 1px; }
+.panel.collapsed .panel-collapse { transform: rotate(-90deg); }
+.panel.collapsed > *:not(.panel-header) { display: none; }
+.panel.collapsed .panel-header {
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: none;
+}
 
 /* ---- Trade chart ---- */
 .chart-wrap { position: relative; margin: 4px 0 18px; }
@@ -879,6 +903,126 @@ body::after {
   .ot-summary { grid-template-columns: 1fr; }
 }
 
+/* ---- Opportunity scanner ---- */
+.alert-tf-row {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--border);
+}
+.alert-tf {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 500;
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-dim);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+  letter-spacing: 0.02em;
+}
+.alert-tf:hover { color: var(--text); border-color: var(--border-strong); }
+.alert-tf.on {
+  background: var(--purple-soft);
+  color: var(--purple);
+  border-color: rgba(153,69,255,0.45);
+}
+
+.alert-list { display: flex; flex-direction: column; gap: 10px; min-height: 60px; }
+.alert-empty {
+  padding: 20px 0;
+  font-size: 13px;
+  color: var(--text-dim);
+  text-align: center;
+  line-height: 1.5;
+}
+
+.alert-item {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 12px;
+  align-items: center;
+  padding: 11px 13px;
+  background: var(--panel-raised);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  animation: alertIn 0.25s ease-out;
+}
+@keyframes alertIn {
+  from { transform: translateY(-4px); opacity: 0; }
+  to   { transform: translateY(0); opacity: 1; }
+}
+.alert-side {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: 0.04em;
+  padding: 6px 9px;
+  border-radius: 7px;
+  min-width: 46px;
+  text-align: center;
+}
+.alert-side.pos { background: var(--teal-soft); color: var(--teal); }
+.alert-side.neg { background: var(--danger-soft); color: var(--danger); }
+.alert-main { min-width: 0; }
+.alert-title { font-size: 14px; font-weight: 500; }
+.alert-sub {
+  font-size: 12px;
+  color: var(--text-dim);
+  margin-top: 3px;
+  font-family: var(--font-mono);
+  letter-spacing: -0.01em;
+}
+.alert-arm {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 7px 13px;
+  border-radius: 8px;
+  border: none;
+  background: linear-gradient(100deg, #9945FF 15%, #14F195 85%);
+  color: #0A0612;
+  cursor: pointer;
+  letter-spacing: -0.01em;
+}
+.alert-arm:hover { filter: brightness(1.1); }
+.alert-arm:active { transform: scale(0.97); }
+
+.alert-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
+  flex-wrap: wrap;
+}
+.alert-actions .btn-sm {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 500;
+  padding: 7px 12px;
+  border-radius: 8px;
+  background: var(--panel-raised);
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.alert-actions .btn-sm:hover { background: var(--panel-hi); color: var(--text); }
+.alert-actions .btn-sm:disabled { opacity: 0.7; cursor: default; }
+.alert-last {
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  color: var(--text-dim);
+  letter-spacing: -0.01em;
+}
+
 /* ---- Pro mode ---- */
 .pro-notice {
   display: none;
@@ -1029,7 +1173,7 @@ body.pro-on .strat-row.pro .s-pro-active { display: inline-block; }
   <section class="grid">
     <div class="col">
       <!-- Open Trade order ticket -->
-      <div class="panel">
+      <div class="panel" data-panel-id="open-trade">
         <div class="panel-header">
           <div class="panel-head">
             <div class="panel-kicker k-engine">Open trade</div>
@@ -1175,44 +1319,6 @@ body.pro-on .strat-row.pro .s-pro-active { display: inline-block; }
       </div>
 
       <!-- Positions -->
-      <div class="panel positions">
-        <div class="panel-header">
-          <div class="panel-head">
-            <div class="panel-kicker k-live">Positions</div>
-            <div class="panel-title">All open</div>
-            <div class="panel-desc">Every live spot and perp position across all active strategies.</div>
-          </div>
-          <div class="panel-meta">Updated 2s ago</div>
-        </div>
-        <div class="tbl-wrap">
-          <table>
-            <thead>
-              <tr><th>Market</th><th>Side</th><th>Entry</th><th style="text-align:right;">Unrealised</th></tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td class="sym">SOL-PERP</td>
-                <td><span class="tag tag-long">Long</span></td>
-                <td class="num l">$187.20</td>
-                <td class="num pos">+£14.20</td>
-              </tr>
-              <tr>
-                <td class="sym">JTO-PERP</td>
-                <td><span class="tag tag-short">Short</span></td>
-                <td class="num l">$3.41</td>
-                <td class="num pos">+£8.80</td>
-              </tr>
-              <tr>
-                <td class="sym">BONK/USDC</td>
-                <td><span class="tag tag-spot">Spot</span></td>
-                <td class="num l">$0.0000192</td>
-                <td class="num neg">−£1.20</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-
       <!-- Signal feed -->
       <div class="panel">
         <div class="panel-header">
@@ -1257,8 +1363,80 @@ body.pro-on .strat-row.pro .s-pro-active { display: inline-block; }
     </div>
 
     <div class="col">
+      <!-- Opportunity scanner — alerts when BB entries fire on active timeframes -->
+      <div class="panel" data-panel-id="alerts">
+        <div class="panel-header">
+          <div class="panel-head">
+            <div class="panel-kicker k-live">Alerts</div>
+            <div class="panel-title">Opportunity scanner</div>
+            <div class="panel-desc">Watches SOL, BTC, ETH on your active timeframes. Fires when the current candle sits near a Bollinger band — the setup Nomad's strategies look for.</div>
+          </div>
+          <div class="panel-meta"><span id="opp-count">0</span> live</div>
+        </div>
+
+        <div class="alert-tf-row" id="alert-tf-row" aria-label="Active timeframes to scan">
+          <button class="alert-tf" type="button" data-tf="1m">1m</button>
+          <button class="alert-tf on" type="button" data-tf="5m">5m</button>
+          <button class="alert-tf on" type="button" data-tf="15m">15m</button>
+          <button class="alert-tf on" type="button" data-tf="1h">1h</button>
+          <button class="alert-tf" type="button" data-tf="4h">4h</button>
+          <button class="alert-tf" type="button" data-tf="1d">1D</button>
+        </div>
+
+        <div class="alert-list" id="alert-list">
+          <div class="alert-empty">Scanning your active timeframes… opportunities will appear here.</div>
+        </div>
+
+        <div class="alert-actions">
+          <button class="btn-sm" type="button" id="req-notif">Enable browser notifications</button>
+          <span class="alert-last">Last scan <span id="alert-last-time">—</span></span>
+        </div>
+      </div>
+
+      <!-- Positions (next to the chart) -->
+      <div class="panel positions" data-panel-id="positions">
+        <div class="panel-header">
+          <div class="panel-head">
+            <div class="panel-kicker k-live">Positions</div>
+            <div class="panel-title">Open positions</div>
+            <div class="panel-desc">Live spot and perp positions. P&L updates every 3 seconds from real prices.</div>
+          </div>
+          <div class="panel-meta">
+            <span id="pnl-total" class="pos">—</span><br>
+            <span style="font-size:10px; color:var(--text-faint); letter-spacing:0.1em; text-transform:uppercase;">Unrealised</span>
+          </div>
+        </div>
+        <div class="tbl-wrap">
+          <table>
+            <thead>
+              <tr><th>Market</th><th>Side</th><th>Entry</th><th style="text-align:right;">P&amp;L</th></tr>
+            </thead>
+            <tbody id="pos-tbody">
+              <tr data-pos data-sym="SOL" data-dir="long" data-entry="93.20" data-size="1.00">
+                <td class="sym">SOL-PERP</td>
+                <td><span class="tag tag-long">Long</span></td>
+                <td class="num l">$93.20</td>
+                <td class="num" data-field="pnl">—</td>
+              </tr>
+              <tr data-pos data-sym="SOL" data-dir="long" data-entry="95.50" data-size="0.50">
+                <td class="sym">SOL-PERP</td>
+                <td><span class="tag tag-long">Long</span></td>
+                <td class="num l">$95.50</td>
+                <td class="num" data-field="pnl">—</td>
+              </tr>
+              <tr data-pos data-sym="BTC" data-dir="short" data-entry="82000" data-size="0.01">
+                <td class="sym">BTC-PERP</td>
+                <td><span class="tag tag-short">Short</span></td>
+                <td class="num l">$82,000</td>
+                <td class="num" data-field="pnl">—</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
       <!-- Strategies -->
-      <div class="panel">
+      <div class="panel" data-panel-id="strategies">
         <div class="panel-header">
           <div class="panel-head">
             <div class="panel-kicker k-engine">Engine</div>
@@ -1402,6 +1580,14 @@ async function updateLivePrices() {
     if (!resp.ok) return;
     const data = await resp.json();
 
+    // Cache live prices by symbol for P&L recomputation
+    Object.keys(data).forEach(key => {
+      const sym = key.split('/')[0];
+      if (data[key] && typeof data[key].price === 'number') {
+        _livePrices[sym] = data[key].price;
+      }
+    });
+
     document.querySelectorAll('.market-chip[data-sym]').forEach(chip => {
       const sym = chip.dataset.sym;
       const info = data[sym + '/USD'];
@@ -1422,6 +1608,9 @@ async function updateLivePrices() {
       const liveTag = document.getElementById('live-tag');
       if (liveTag) liveTag.textContent = 'SOL ' + formatPrice(sol.price) + ' live';
     }
+
+    // Recompute P&L on each tick
+    recomputePnL();
   } catch (e) {}
 }
 setInterval(updateLivePrices, 3000);
@@ -1706,6 +1895,225 @@ setInterval(() => {
   const pk = document.body.getAttribute('data-wallet');
   if (pk) fetchWalletBalance(pk);
 }, 15000);
+
+// --- Collapsible panels (adds a chevron to every panel; state persisted) ---
+(function initCollapsibles() {
+  const CHEVRON = '<svg width="10" height="7" viewBox="0 0 10 7" aria-hidden="true"><path d="M1 1 L5 6 L9 1" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  document.querySelectorAll('.panel').forEach((panel, i) => {
+    const header = panel.querySelector('.panel-header');
+    if (!header) return;
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'panel-collapse';
+    btn.innerHTML = CHEVRON;
+    btn.setAttribute('aria-label', 'Collapse panel');
+    const id = panel.dataset.panelId || ('panel-' + i);
+    try {
+      if (localStorage.getItem('nomad.collapse.' + id) === '1') {
+        panel.classList.add('collapsed');
+      }
+    } catch (e) {}
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const nowCollapsed = panel.classList.toggle('collapsed');
+      try { localStorage.setItem('nomad.collapse.' + id, nowCollapsed ? '1' : '0'); } catch (e) {}
+    });
+    header.appendChild(btn);
+  });
+})();
+
+// --- Live P&L on open positions (recomputed from current prices every 3s) ---
+let _livePrices = {};
+function recomputePnL() {
+  const tbody = document.getElementById('pos-tbody');
+  if (!tbody) return;
+  const rows = tbody.querySelectorAll('tr[data-pos]');
+  let totalPnL = 0;
+  let anyPriced = false;
+  rows.forEach(row => {
+    const sym = row.dataset.sym;
+    const dir = row.dataset.dir;
+    const entry = parseFloat(row.dataset.entry);
+    const size = parseFloat(row.dataset.size);
+    const live = _livePrices[sym];
+    const cell = row.querySelector('[data-field="pnl"]');
+    if (!cell || !live || isNaN(entry) || isNaN(size)) return;
+    anyPriced = true;
+    const diff = live - entry;
+    const pnl = dir === 'long' ? diff * size : -diff * size;
+    totalPnL += pnl;
+    const sign = pnl >= 0 ? '+' : '−';
+    const absV = Math.abs(pnl);
+    const str = absV >= 100
+      ? '$' + absV.toLocaleString('en-US', { maximumFractionDigits: 0 })
+      : '$' + absV.toFixed(2);
+    cell.textContent = sign + str;
+    cell.className = 'num ' + (pnl >= 0 ? 'pos' : 'neg');
+  });
+  const tot = document.getElementById('pnl-total');
+  if (tot && anyPriced) {
+    const sign = totalPnL >= 0 ? '+' : '−';
+    const str = '$' + Math.abs(totalPnL).toFixed(2);
+    tot.textContent = sign + str;
+    tot.className = totalPnL >= 0 ? 'pos' : 'neg';
+  }
+}
+
+// --- Opportunity scanner (BB alerts across active timeframes) ---
+(function initAlerts() {
+  const tfRow = document.getElementById('alert-tf-row');
+  const list = document.getElementById('alert-list');
+  const countEl = document.getElementById('opp-count');
+  const lastEl = document.getElementById('alert-last-time');
+  const notifBtn = document.getElementById('req-notif');
+  if (!tfRow || !list) return;
+
+  const TF_KEY = 'nomad.alert.tfs';
+  const SEEN_KEY = 'nomad.alert.seen';
+  const SYMBOLS = ['SOL', 'BTC', 'ETH'];
+
+  function getActiveTfs() {
+    return [...tfRow.querySelectorAll('.alert-tf.on')].map(b => b.dataset.tf);
+  }
+  function saveTfs() {
+    try { localStorage.setItem(TF_KEY, JSON.stringify(getActiveTfs())); } catch (e) {}
+  }
+  try {
+    const saved = JSON.parse(localStorage.getItem(TF_KEY) || 'null');
+    if (Array.isArray(saved) && saved.length) {
+      tfRow.querySelectorAll('.alert-tf').forEach(b => {
+        b.classList.toggle('on', saved.includes(b.dataset.tf));
+      });
+    }
+  } catch (e) {}
+
+  tfRow.querySelectorAll('.alert-tf').forEach(b => {
+    b.addEventListener('click', () => {
+      b.classList.toggle('on');
+      saveTfs();
+      scan(); // rescan immediately on toggle
+    });
+  });
+
+  function oppKey(o) { return `${o.symbol}/${o.timeframe}/${o.side}`; }
+
+  let seen;
+  try { seen = new Set(JSON.parse(sessionStorage.getItem(SEEN_KEY) || '[]')); }
+  catch (e) { seen = new Set(); }
+
+  function fmtPrice(p) {
+    if (p >= 1000) return '$' + p.toLocaleString('en-US', { maximumFractionDigits: 0 });
+    if (p >= 1)    return '$' + p.toFixed(2);
+    return '$' + p.toFixed(4);
+  }
+
+  function prefillOrderTicket(sym, side, tf) {
+    const marketSel = document.getElementById('ot-market');
+    if (marketSel) {
+      const want = sym + '-PERP';
+      const opt = Array.from(marketSel.options).find(o => o.value === want);
+      if (opt) marketSel.value = opt.value;
+    }
+    document.querySelectorAll('#ot-direction button').forEach(b => {
+      if (b.dataset.dir === side) b.click();
+    });
+    const trigger = document.getElementById('ot-trigger');
+    if (trigger) {
+      const triggerVal = 'bb_capitulation_' + tf;
+      const opt = Array.from(trigger.options).find(o => o.value === triggerVal);
+      if (opt) trigger.value = opt.value;
+    }
+    // Scroll the Open Trade panel into view
+    const otPanel = document.querySelector('[data-panel-id="open-trade"], .ot-grid')?.closest('.panel');
+    if (otPanel) otPanel.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+
+  function render(opps) {
+    if (opps.length === 0) {
+      list.innerHTML = '<div class="alert-empty">No setups on your active timeframes right now. Scanning every 30 seconds.</div>';
+      countEl.textContent = '0';
+      return;
+    }
+    countEl.textContent = opps.length;
+    const html = opps.map(o => {
+      const arrow = o.side === 'long' ? '↑' : '↓';
+      const cls = o.side === 'long' ? 'pos' : 'neg';
+      return `<div class="alert-item">
+        <div class="alert-side ${cls}">${arrow} ${o.side.toUpperCase()}</div>
+        <div class="alert-main">
+          <div class="alert-title">${o.symbol}-PERP · ${o.timeframe}</div>
+          <div class="alert-sub">%B ${o.percent_b.toFixed(2)} at ${fmtPrice(o.price)} · BB ${o.side === 'long' ? 'lower' : 'upper'} touch</div>
+        </div>
+        <button class="alert-arm" type="button" data-sym="${o.symbol}" data-side="${o.side}" data-tf="${o.timeframe}">Arm</button>
+      </div>`;
+    }).join('');
+    list.innerHTML = html;
+    list.querySelectorAll('.alert-arm').forEach(btn => {
+      btn.addEventListener('click', () => {
+        prefillOrderTicket(btn.dataset.sym, btn.dataset.side, btn.dataset.tf);
+      });
+    });
+  }
+
+  async function scan() {
+    const tfs = getActiveTfs();
+    if (tfs.length === 0) {
+      render([]);
+      return;
+    }
+    try {
+      const url = '/api/opportunities?timeframes=' + encodeURIComponent(tfs.join(','))
+                + '&symbols=' + encodeURIComponent(SYMBOLS.join(','));
+      const resp = await fetch(url, { cache: 'no-store' });
+      if (!resp.ok) return;
+      const data = await resp.json();
+      const opps = data.opportunities || [];
+      render(opps);
+      lastEl.textContent = new Date().toLocaleTimeString([], {
+        hour: '2-digit', minute: '2-digit', second: '2-digit'
+      });
+
+      // Browser notifications for new opportunities only
+      if ('Notification' in window && Notification.permission === 'granted') {
+        opps.forEach(opp => {
+          const key = oppKey(opp);
+          if (!seen.has(key)) {
+            seen.add(key);
+            try {
+              new Notification('Nomad · ' + opp.symbol + ' ' + opp.side.toUpperCase(), {
+                body: opp.timeframe + ' · %B ' + opp.percent_b.toFixed(2)
+                    + ' · ' + fmtPrice(opp.price),
+                tag: key,
+              });
+            } catch (e) {}
+          }
+        });
+        try { sessionStorage.setItem(SEEN_KEY, JSON.stringify([...seen])); } catch (e) {}
+      }
+    } catch (e) {
+      console.warn('alert scan failed', e);
+    }
+  }
+
+  if (notifBtn) {
+    if ('Notification' in window && Notification.permission === 'granted') {
+      notifBtn.textContent = 'Notifications on';
+      notifBtn.disabled = true;
+    }
+    notifBtn.addEventListener('click', async () => {
+      if (!('Notification' in window)) {
+        notifBtn.textContent = 'Not supported in this browser';
+        return;
+      }
+      const perm = await Notification.requestPermission();
+      notifBtn.textContent = perm === 'granted' ? 'Notifications on' : 'Denied — enable in site settings';
+      notifBtn.disabled = perm === 'granted';
+    });
+  }
+
+  scan();
+  setInterval(scan, 30000);
+})();
 
 // --- Strategies: click to toggle on/off ---
 (function stratToggle() {

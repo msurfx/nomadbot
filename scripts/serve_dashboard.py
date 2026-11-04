@@ -351,6 +351,72 @@ def arm_trade(cfg: dict) -> dict:
     return entry
 
 
+def detect_bb_opportunity(
+    candles: list[dict],
+    period: int = 20,
+    std_mult: float = 2.0,
+    long_threshold: float = 0.10,
+    short_threshold: float = 0.90,
+) -> dict | None:
+    """Return a signal dict if the latest candle is near a BB band, else None.
+
+    %B <= 0.10 → close to the lower band → potential long reversion.
+    %B >= 0.90 → close to the upper band → potential short reversion.
+    """
+    if len(candles) < period + 1:
+        return None
+    closes = [c["close"] for c in candles]
+    recent = closes[-period:]
+    mean = sum(recent) / period
+    var = sum((c - mean) ** 2 for c in recent) / period
+    std = var ** 0.5
+    upper = mean + std_mult * std
+    lower = mean - std_mult * std
+    close = closes[-1]
+    if upper == lower:
+        return None
+    pct_b = (close - lower) / (upper - lower)
+
+    side = None
+    if pct_b <= long_threshold:
+        side = "long"
+    elif pct_b >= short_threshold:
+        side = "short"
+    if not side:
+        return None
+
+    return {
+        "side": side,
+        "percent_b": round(pct_b, 4),
+        "price": round(close, 6),
+        "bb_lower": round(lower, 6),
+        "bb_mid": round(mean, 6),
+        "bb_upper": round(upper, 6),
+    }
+
+
+def scan_opportunities(symbols: list[str], timeframes: list[str]) -> list[dict]:
+    """Run a BB opportunity scan across the requested symbols and timeframes."""
+    out = []
+    now = int(time.time())
+    for sym in symbols:
+        full_sym = f"{sym}/USD"
+        for tf in timeframes:
+            if tf not in TIMEFRAMES_CC:
+                continue
+            try:
+                candles = fetch_candles(full_sym, tf)
+                opp = detect_bb_opportunity(candles)
+                if opp:
+                    opp["symbol"] = sym
+                    opp["timeframe"] = tf
+                    opp["detected_at"] = now
+                    out.append(opp)
+            except Exception as e:
+                print(f"  [opp] {sym} {tf} failed: {e}", file=sys.stderr)
+    return out
+
+
 def get_wallet(pubkey: str) -> dict:
     # SOL balance (lamports -> SOL)
     bal = rpc_call("getBalance", [pubkey])
@@ -444,6 +510,25 @@ class Handler(BaseHTTPRequestHandler):
             ttl = 20.0 if tf in ("5m", "15m") else 60.0 if tf in ("1h", "4h") else 300.0
             try:
                 body = cached(key, ttl, lambda: json.dumps(fetch_candles(symbol, tf)).encode())
+                self._send(200, body, "application/json")
+            except Exception as e:
+                self._json(500, {"error": str(e)})
+            return
+
+        if path == "/api/opportunities":
+            tf_str = qs.get("timeframes", ["5m,15m,1h"])[0]
+            sym_str = qs.get("symbols", ["SOL,BTC,ETH"])[0]
+            tfs = [x.strip() for x in tf_str.split(",") if x.strip()]
+            syms = [x.strip().upper() for x in sym_str.split(",") if x.strip()]
+            key = f"opp:{','.join(syms)}:{','.join(tfs)}"
+            try:
+                body = cached(
+                    key, ttl=20.0,
+                    fetch=lambda: json.dumps({
+                        "generated_at": int(time.time()),
+                        "opportunities": scan_opportunities(syms, tfs),
+                    }).encode(),
+                )
                 self._send(200, body, "application/json")
             except Exception as e:
                 self._json(500, {"error": str(e)})
