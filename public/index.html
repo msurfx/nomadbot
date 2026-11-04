@@ -627,6 +627,77 @@ body::after {
   font-variant-numeric: tabular-nums;
 }
 .positions td.sym { font-weight: 500; }
+.pos-strat {
+  font-size: 11px;
+  color: var(--text-dim);
+  font-family: var(--font-mono);
+  font-weight: 400;
+  margin-top: 3px;
+  letter-spacing: -0.01em;
+}
+.pos-dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  box-shadow: 0 0 6px currentColor;
+}
+.pos-empty {
+  padding: 24px 0;
+  color: var(--text-dim);
+  font-size: 13px;
+  text-align: center;
+  line-height: 1.55;
+}
+.alert-busy {
+  font-size: 11.5px;
+  color: var(--text-faint);
+  font-style: italic;
+  padding: 6px 10px;
+  letter-spacing: -0.01em;
+}
+
+/* Chart hover tooltip (shows trade info on marker hover) */
+.chart-hover-tip {
+  position: absolute;
+  background: rgba(10,6,20,0.96);
+  border: 1px solid rgba(255,255,255,0.18);
+  border-radius: 10px;
+  padding: 12px 14px;
+  font-size: 12px;
+  color: var(--text);
+  pointer-events: none;
+  z-index: 20;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+  min-width: 200px;
+  font-family: var(--font-sans);
+}
+.chart-hover-tip .hover-head {
+  font-weight: 600;
+  margin-bottom: 8px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(255,255,255,0.12);
+  font-size: 13px;
+  letter-spacing: -0.01em;
+}
+.chart-hover-tip .hover-head.long { color: var(--teal); }
+.chart-hover-tip .hover-head.short { color: var(--danger); }
+.chart-hover-tip .hover-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  font-size: 11.5px;
+  color: var(--text-dim);
+  padding: 2px 0;
+}
+.chart-hover-tip .hover-row strong {
+  color: var(--text);
+  font-weight: 500;
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
 .positions td.num { font-family: var(--font-mono); text-align: right; }
 .positions td.num.l { text-align: left; }
 
@@ -1170,13 +1241,77 @@ body.pro-on .strat-row.pro .s-pro-active { display: inline-block; }
   .panel { padding: 18px 18px; }
   .chart { height: 220px; }
 }
-@media (max-width: 480px) {
-  .header-actions { width: 100%; justify-content: space-between; }
-  .status-pill { order: -1; width: 100%; justify-content: center; }
-  .stat-value { font-size: 19px; }
-  .feed-item { grid-template-columns: 44px 1fr; gap: 10px; }
-  .chart { height: 200px; }
-  .brand-tag { margin-left: 0; }
+@media (max-width: 640px) {
+  .app { padding-block: 16px 36px; }
+  .header { margin-bottom: 20px; gap: 12px; }
+  .brand-row { font-size: 22px; }
+  .brand-name { font-size: 22px; }
+  .brand-tag { margin-left: 0; margin-top: 8px; font-size: 10.5px; }
+  .brand-mark { width: 22px; height: 22px; }
+  .header-actions { width: 100%; justify-content: flex-start; gap: 6px; flex-wrap: wrap; }
+  .status-pill { order: -1; width: 100%; justify-content: center; font-size: 11.5px; padding: 8px 12px; }
+  .mode-switch { flex: 1; }
+  .mode-switch button { padding: 8px 12px; font-size: 12.5px; }
+  .btn { padding: 8px 12px; font-size: 12.5px; min-height: 36px; }
+  .btn-connect { padding: 8px 14px; font-size: 12.5px; min-height: 36px; }
+
+  .stats { grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 12px; }
+  .stat { padding: 12px 14px; }
+  .stat-value { font-size: 18px; }
+  .stat-label { font-size: 10.5px; }
+  .stat-delta { font-size: 11.5px; }
+
+  .tab-bar { gap: 6px; margin-bottom: 14px; }
+  .tab-btn { padding: 9px 14px; font-size: 13px; min-height: 40px; }
+  .tab-reset { padding: 8px 12px; font-size: 11px; min-height: 40px; }
+
+  .grid { gap: 12px; }
+  .col { gap: 12px; }
+  .panel { padding: 16px 18px; border-radius: 14px; }
+  .panel-header { margin-bottom: 14px; padding-bottom: 12px; gap: 10px; }
+  .panel-title { font-size: 17px; }
+  .panel-desc { font-size: 12.5px; max-width: none; margin-top: 6px; }
+  .panel-kicker { font-size: 10.5px; margin-bottom: 6px; }
+  .panel-meta { font-size: 11px; }
+  .panel-collapse { width: 32px; height: 32px; }
+
+  .market-chip { padding: 10px 14px; min-width: 150px; }
+  .mb-price { font-size: 14.5px; }
+  .mb-icon { width: 20px; height: 20px; }
+
+  #tv-chart { height: 280px; min-height: 240px; }
+  .chart-toolbar { gap: 8px; }
+  .tf-btn { padding: 8px 11px; font-size: 12px; min-height: 36px; }
+  .chart-legend { gap: 10px; font-size: 10.5px; }
+
+  .ot-grid { grid-template-columns: 1fr; gap: 10px; }
+  .ot-summary { grid-template-columns: 1fr 1fr; gap: 10px; padding: 12px; font-size: 12.5px; }
+  .ot-input, .ot-select { padding: 10px 12px; font-size: 14.5px; min-height: 44px; }
+  .ot-toggle-group button { padding: 9px 12px; font-size: 13px; min-height: 40px; }
+  .ot-arm { padding: 14px; font-size: 15px; min-height: 48px; }
+
+  .alert-tf-row { gap: 5px; }
+  .alert-tf { padding: 8px 11px; font-size: 12px; min-height: 36px; }
+  .alert-item { padding: 12px 13px; }
+  .alert-arm { padding: 9px 14px; font-size: 12.5px; min-height: 36px; }
+
+  .feed-item { grid-template-columns: 44px 1fr; gap: 10px; padding: 12px 0; }
+  .feed-body { font-size: 13.5px; }
+
+  .strat-row { padding: 12px 14px; min-height: 48px; }
+  .strat-name { font-size: 14px; }
+  .strat-tf { font-size: 11.5px; }
+
+  .positions table { font-size: 12.5px; }
+  .positions td { padding: 11px 0; }
+  .pos-strat { font-size: 10.5px; margin-top: 2px; }
+
+  .disc { font-size: 11.5px; }
+}
+@media (max-width: 420px) {
+  .brand-row { font-size: 20px; }
+  .stat-value { font-size: 16.5px; }
+  .tab-btn { padding: 8px 11px; font-size: 12px; }
 }
 
 .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
@@ -1438,6 +1573,30 @@ body.pro-on .strat-row.pro .s-pro-active { display: inline-block; }
       </div>
 
       <!-- Positions -->
+      <!-- Positions (below chart in left col for easy glance) -->
+      <div class="panel positions" data-panel-id="positions" data-section="trade">
+        <div class="panel-header">
+          <div class="panel-head">
+            <div class="panel-kicker k-live">Positions</div>
+            <div class="panel-title">Open positions</div>
+            <div class="panel-desc">One perp per pair. Max 2 perp positions open at once. Spot positions tracked separately.</div>
+          </div>
+          <div class="panel-meta">
+            <span id="pnl-total">—</span><br>
+            <span style="font-size:10px; color:var(--text-faint); letter-spacing:0.1em; text-transform:uppercase;">Unrealised · <span id="pos-count">0</span>/2 perps</span>
+          </div>
+        </div>
+        <div class="tbl-wrap">
+          <table>
+            <thead>
+              <tr><th></th><th>Market</th><th>Side</th><th>Entry</th><th style="text-align:right;">P&amp;L</th></tr>
+            </thead>
+            <tbody id="pos-tbody"></tbody>
+          </table>
+          <div id="pos-empty" class="pos-empty">No open positions. Arm one from an alert, or configure in Open Trade.</div>
+        </div>
+      </div>
+
       <!-- Signal feed -->
       <div class="panel" data-panel-id="signals" data-section="trade">
         <div class="panel-header">
@@ -1509,48 +1668,6 @@ body.pro-on .strat-row.pro .s-pro-active { display: inline-block; }
         <div class="alert-actions">
           <button class="btn-sm" type="button" id="req-notif">Enable browser notifications</button>
           <span class="alert-last">Last scan <span id="alert-last-time">—</span></span>
-        </div>
-      </div>
-
-      <!-- Positions (next to the chart) -->
-      <div class="panel positions" data-panel-id="positions" data-section="trade">
-        <div class="panel-header">
-          <div class="panel-head">
-            <div class="panel-kicker k-live">Positions</div>
-            <div class="panel-title">Open positions</div>
-            <div class="panel-desc">Live spot and perp positions. P&L updates every 3 seconds from real prices.</div>
-          </div>
-          <div class="panel-meta">
-            <span id="pnl-total" class="pos">—</span><br>
-            <span style="font-size:10px; color:var(--text-faint); letter-spacing:0.1em; text-transform:uppercase;">Unrealised</span>
-          </div>
-        </div>
-        <div class="tbl-wrap">
-          <table>
-            <thead>
-              <tr><th>Market</th><th>Side</th><th>Entry</th><th style="text-align:right;">P&amp;L</th></tr>
-            </thead>
-            <tbody id="pos-tbody">
-              <tr data-pos data-sym="SOL" data-dir="long" data-entry="93.20" data-size="1.00">
-                <td class="sym">SOL-PERP</td>
-                <td><span class="tag tag-long">Long</span></td>
-                <td class="num l">$93.20</td>
-                <td class="num" data-field="pnl">—</td>
-              </tr>
-              <tr data-pos data-sym="SOL" data-dir="long" data-entry="95.50" data-size="0.50">
-                <td class="sym">SOL-PERP</td>
-                <td><span class="tag tag-long">Long</span></td>
-                <td class="num l">$95.50</td>
-                <td class="num" data-field="pnl">—</td>
-              </tr>
-              <tr data-pos data-sym="BTC" data-dir="short" data-entry="82000" data-size="0.01">
-                <td class="sym">BTC-PERP</td>
-                <td><span class="tag tag-short">Short</span></td>
-                <td class="num l">$82,000</td>
-                <td class="num" data-field="pnl">—</td>
-              </tr>
-            </tbody>
-          </table>
         </div>
       </div>
 
@@ -1737,7 +1854,9 @@ updateLivePrices();
 
 // --- TradingView Lightweight Charts with Jupiter-style timeframe tabs ---
 let chartInstance = null;
+let candleSeriesRef = null;
 let currentTF = '1h';
+window._nomadTrades = window._nomadTrades || [];  // all opened demo positions (for chart + hover)
 
 function chartOptions() {
   return {
@@ -1855,23 +1974,23 @@ async function loadChart(tf) {
     }
     const bbCommon = { lastValueVisible: true, priceLineVisible: false, crosshairMarkerVisible: false };
     chart.addLineSeries({
-      color: '#B47CFF', lineWidth: 1.5, lineStyle: 2,
+      color: '#C89AFF', lineWidth: 2, lineStyle: 2,
       title: 'BB upper', ...bbCommon,
     }).setData(bbU);
     chart.addLineSeries({
-      color: 'rgba(180,124,255,0.6)', lineWidth: 1, lineStyle: 1,
+      color: '#9945FF', lineWidth: 3, lineStyle: 0,
       title: 'BB mid', ...bbCommon,
     }).setData(bbM);
     chart.addLineSeries({
-      color: '#B47CFF', lineWidth: 1.5, lineStyle: 2,
+      color: '#C89AFF', lineWidth: 2, lineStyle: 2,
       title: 'BB lower', ...bbCommon,
     }).setData(bbL);
 
-    const entryIdx = Math.max(period, Math.floor(candles.length * 0.72));
-    const entry = candles[entryIdx];
-    candleSeries.setMarkers([
-      { time: entry.time, position: 'belowBar', color: '#9945FF', shape: 'arrowUp', text: 'Entry 0.42×' },
-    ]);
+    candleSeriesRef = candleSeries;
+
+    // Rebuild markers + TP/SL lines from all open positions
+    rebuildChartMarkers();
+    rebuildPositionLines();
 
     const last = bbU.length - 1;
     if (last >= 0) {
@@ -1881,11 +2000,67 @@ async function loadChart(tf) {
       candleSeries.createPriceLine({ price: l * 0.995, color: '#F43F5E', lineWidth: 1, lineStyle: 2, axisLabelVisible: true, title: 'Stop' });
     }
 
+    setupChartHover(chart, container);
+
     chart.timeScale().fitContent();
   } catch (e) {
     if (loading) loading.textContent = 'Chart error — check console';
     console.error('chart error', e);
   }
+}
+
+function rebuildChartMarkers() {
+  if (!candleSeriesRef) return;
+  const markers = window._nomadTrades
+    .filter(t => t.sym === 'SOL')
+    .map(t => ({
+      time: t.time,
+      position: t.side === 'long' ? 'belowBar' : 'aboveBar',
+      color: t.color || (t.side === 'long' ? '#14F195' : '#F43F5E'),
+      shape: 'circle',
+      size: 2,
+    }));
+  candleSeriesRef.setMarkers(markers);
+}
+
+function setupChartHover(chart, container) {
+  // Clear any prior tooltip (loadChart rebuilds)
+  const old = container.querySelector('.chart-hover-tip');
+  if (old) old.remove();
+
+  const tip = document.createElement('div');
+  tip.className = 'chart-hover-tip';
+  tip.style.display = 'none';
+  container.appendChild(tip);
+
+  chart.subscribeCrosshairMove((param) => {
+    if (!param || !param.time || !param.point) {
+      tip.style.display = 'none';
+      return;
+    }
+    const match = window._nomadTrades.find(
+      t => t.sym === 'SOL' && Math.abs(t.time - param.time) <= 1
+    );
+    if (!match) {
+      tip.style.display = 'none';
+      return;
+    }
+    const arrow = match.side === 'long' ? '↑ Long' : '↓ Short';
+    const sideCls = match.side === 'long' ? 'long' : 'short';
+    tip.innerHTML = `
+      <div class="hover-head ${sideCls}">${arrow} · SOL-PERP</div>
+      <div class="hover-row"><span>Entry</span><strong>$${Number(match.entry).toFixed(2)}</strong></div>
+      <div class="hover-row"><span>Size</span><strong>${Number(match.size).toFixed(3)} SOL</strong></div>
+      <div class="hover-row"><span>Leverage</span><strong>${match.leverage}×</strong></div>
+      <div class="hover-row"><span>Collateral</span><strong>$${Number(match.collateral).toFixed(2)}</strong></div>
+      <div class="hover-row"><span>Strategy</span><strong>${match.strategy}</strong></div>
+    `;
+    const px = Math.min(param.point.x + 14, container.clientWidth - 230);
+    const py = Math.max(param.point.y - 40, 0);
+    tip.style.left = px + 'px';
+    tip.style.top = py + 'px';
+    tip.style.display = 'block';
+  });
 }
 
 function wireTimeframes() {
@@ -2124,6 +2299,152 @@ function recomputePnL() {
   }
 }
 
+// --- Position colors (cycled, each trade gets one) ---
+const POS_COLORS = ['#14F195', '#E6A858', '#FF6B9D', '#4ECDC4', '#9945FF', '#F4A261'];
+
+function hasOpenPosition(sym) {
+  return window._nomadTrades.some(t => t.sym === sym);
+}
+function perpCount() {
+  return window._nomadTrades.length;
+}
+
+// --- Shared: open a demo position (used by Alert Arm and Open Trade Arm) ---
+function openDemoPosition(cfg) {
+  const sym = cfg.sym;
+
+  // Rule 1: one perp per pair
+  if (hasOpenPosition(sym)) {
+    alert('Already have a ' + sym + '-PERP position open. Close it before opening a new one on the same pair.');
+    return null;
+  }
+  // Rule 2: max 2 perps open at once (Drift-style)
+  if (perpCount() >= 2) {
+    alert('Max 2 perp positions open at once. Close one first.');
+    return null;
+  }
+
+  const livePrice = _livePrices[sym];
+  if (!livePrice) {
+    alert('Still loading prices — try again in a second.');
+    return null;
+  }
+  const entry = Number(cfg.entry) || livePrice;
+  const collateral = Number(cfg.collateral) || 10;
+  const leverage = Number(cfg.leverage) || 10;
+  const size = (collateral * leverage) / entry;
+  const strategy = cfg.strategy || 'Manual';
+  const stopPct = Number(cfg.stopPct) || 2.5;
+  // Take profit: BB mid approximation (2.5% away by default); Stop loss: stopPct away
+  const tp = cfg.side === 'long' ? entry * (1 + 0.025) : entry * (1 - 0.025);
+  const sl = cfg.side === 'long' ? entry * (1 - stopPct / 100) : entry * (1 + stopPct / 100);
+  const color = POS_COLORS[window._nomadTrades.length % POS_COLORS.length];
+
+  const trade = {
+    id: 't' + Date.now() + Math.random().toString(36).slice(2, 6),
+    sym, side: cfg.side, entry, size, leverage, collateral, strategy,
+    tp, sl, color,
+    time: Math.floor(Date.now() / 1000),
+    openedAt: new Date(),
+  };
+  window._nomadTrades.push(trade);
+
+  // 1) Positions table row (prepended so newest is at top)
+  const tbody = document.getElementById('pos-tbody');
+  if (tbody) {
+    const row = document.createElement('tr');
+    row.setAttribute('data-pos', '');
+    row.dataset.sym = trade.sym;
+    row.dataset.dir = trade.side;
+    row.dataset.entry = String(trade.entry);
+    row.dataset.size = String(trade.size);
+    row.dataset.strategy = trade.strategy;
+    row.dataset.tradeId = trade.id;
+    const entryStr = trade.entry >= 1000
+      ? '$' + Math.round(trade.entry).toLocaleString('en-US')
+      : '$' + trade.entry.toFixed(2);
+    const tagCls = trade.side === 'long' ? 'tag-long' : 'tag-short';
+    const tagText = trade.side === 'long' ? 'Long' : 'Short';
+    row.innerHTML = `
+      <td style="width:18px; padding-right:4px;"><span class="pos-dot" style="color:${trade.color}; background:${trade.color};"></span></td>
+      <td class="sym">${trade.sym}-PERP<div class="pos-strat">${trade.strategy} · TP ${(trade.tp).toFixed(2)} · SL ${(trade.sl).toFixed(2)}</div></td>
+      <td><span class="tag ${tagCls}">${tagText}</span></td>
+      <td class="num l">${entryStr}</td>
+      <td class="num" data-field="pnl">—</td>
+    `;
+    tbody.insertBefore(row, tbody.firstChild);
+  }
+  updatePositionsHeader();
+
+  // 2) Chart marker + TP/SL lines (only if sym matches the charted symbol — SOL right now)
+  if (trade.sym === 'SOL') {
+    rebuildChartMarkers();
+    rebuildPositionLines();
+  }
+
+  // 3) Signal feed entry
+  const feed = document.querySelector('.feed');
+  if (feed) {
+    const t = trade.openedAt;
+    const hh = String(t.getHours()).padStart(2, '0');
+    const mm = String(t.getMinutes()).padStart(2, '0');
+    const item = document.createElement('div');
+    item.className = 'feed-item';
+    item.innerHTML = `
+      <div class="feed-time">${hh}:${mm}</div>
+      <div>
+        <div class="feed-kind k-entry">Entry · ${trade.strategy}</div>
+        <div class="feed-body">${trade.sym}-PERP ${trade.side.toUpperCase()} at <span class="m">$${trade.entry.toFixed(2)}</span>, ${trade.leverage}× on $${trade.collateral.toFixed(2)} collateral. TP <span class="m">$${trade.tp.toFixed(2)}</span>, SL <span class="m">$${trade.sl.toFixed(2)}</span>.</div>
+      </div>
+    `;
+    feed.insertBefore(item, feed.firstChild);
+  }
+
+  // 4) Recompute P&L immediately
+  recomputePnL();
+  // 5) Rerender alerts to hide Arm button on this pair
+  if (typeof refreshAlertsUI === 'function') refreshAlertsUI();
+
+  return trade;
+}
+
+function updatePositionsHeader() {
+  const count = window._nomadTrades.length;
+  const posCountEl = document.getElementById('pos-count');
+  const emptyEl = document.getElementById('pos-empty');
+  if (posCountEl) posCountEl.textContent = String(count);
+  if (emptyEl) emptyEl.style.display = count === 0 ? '' : 'none';
+}
+
+function rebuildPositionLines() {
+  if (!candleSeriesRef) return;
+  if (window._positionLines) {
+    window._positionLines.forEach(line => {
+      try { candleSeriesRef.removePriceLine(line); } catch (e) {}
+    });
+  }
+  window._positionLines = [];
+  window._nomadTrades.filter(t => t.sym === 'SOL').forEach(trade => {
+    const tpLine = candleSeriesRef.createPriceLine({
+      price: trade.tp,
+      color: trade.color,
+      lineWidth: 1,
+      lineStyle: 2,
+      axisLabelVisible: true,
+      title: 'TP',
+    });
+    const slLine = candleSeriesRef.createPriceLine({
+      price: trade.sl,
+      color: '#F43F5E',
+      lineWidth: 1,
+      lineStyle: 2,
+      axisLabelVisible: true,
+      title: 'SL',
+    });
+    window._positionLines.push(tpLine, slLine);
+  });
+}
+
 // --- Opportunity scanner (BB alerts across active timeframes) ---
 (function initAlerts() {
   const tfRow = document.getElementById('alert-tf-row');
@@ -2172,7 +2493,17 @@ function recomputePnL() {
     return '$' + p.toFixed(4);
   }
 
-  function prefillOrderTicket(sym, side, tf) {
+  function armFromAlert(sym, side, tf) {
+    // Read current defaults from the Open Trade panel
+    const collat = parseFloat(document.getElementById('ot-collateral')?.value) || 10;
+    const lev = parseFloat(document.getElementById('ot-leverage')?.value) || 10;
+    const strategy = 'BB capitulation · ' + tf + ' · ' + lev + '×';
+    const trade = openDemoPosition({ sym, side, collateral: collat, leverage: lev, strategy });
+    if (!trade) {
+      alert('Waiting on live price — try again in a second.');
+      return;
+    }
+    // Also prefill the Open Trade panel so user sees what was armed
     const marketSel = document.getElementById('ot-market');
     if (marketSel) {
       const want = sym + '-PERP';
@@ -2182,15 +2513,6 @@ function recomputePnL() {
     document.querySelectorAll('#ot-direction button').forEach(b => {
       if (b.dataset.dir === side) b.click();
     });
-    const trigger = document.getElementById('ot-trigger');
-    if (trigger) {
-      const triggerVal = 'bb_capitulation_' + tf;
-      const opt = Array.from(trigger.options).find(o => o.value === triggerVal);
-      if (opt) trigger.value = opt.value;
-    }
-    // Scroll the Open Trade panel into view
-    const otPanel = document.querySelector('[data-panel-id="open-trade"], .ot-grid')?.closest('.panel');
-    if (otPanel) otPanel.scrollIntoView({ behavior: 'smooth', block: 'center' });
   }
 
   function watchingHTML(watching) {
@@ -2222,19 +2544,32 @@ function recomputePnL() {
     const alertHtml = opps.map(o => {
       const arrow = o.side === 'long' ? '↑' : '↓';
       const cls = o.side === 'long' ? 'pos' : 'neg';
+      const busy = hasOpenPosition(o.symbol);
+      const atCap = perpCount() >= 2;
+      const actionHtml = busy
+        ? '<span class="alert-busy">Already open</span>'
+        : atCap
+          ? '<span class="alert-busy">2 perps max</span>'
+          : `<button class="alert-arm" type="button" data-sym="${o.symbol}" data-side="${o.side}" data-tf="${o.timeframe}">Arm</button>`;
       return `<div class="alert-item">
         <div class="alert-side ${cls}">${arrow} ${o.side.toUpperCase()}</div>
         <div class="alert-main">
           <div class="alert-title">${o.symbol}-PERP · ${o.timeframe}</div>
           <div class="alert-sub">%B ${o.percent_b.toFixed(2)} at ${fmtPrice(o.price)} · BB ${o.side === 'long' ? 'lower' : 'upper'} touch</div>
         </div>
-        <button class="alert-arm" type="button" data-sym="${o.symbol}" data-side="${o.side}" data-tf="${o.timeframe}">Arm</button>
+        ${actionHtml}
       </div>`;
     }).join('');
     list.innerHTML = alertHtml + watchingHTML(watching);
     list.querySelectorAll('.alert-arm').forEach(btn => {
       btn.addEventListener('click', () => {
-        prefillOrderTicket(btn.dataset.sym, btn.dataset.side, btn.dataset.tf);
+        armFromAlert(btn.dataset.sym, btn.dataset.side, btn.dataset.tf);
+        btn.textContent = 'Armed ✓';
+        btn.disabled = true;
+        setTimeout(() => {
+          btn.textContent = 'Arm';
+          btn.disabled = false;
+        }, 2000);
       });
     });
   }
@@ -2295,9 +2630,54 @@ function recomputePnL() {
     });
   }
 
+  // Expose a lightweight re-render hook for other code to call after a trade opens
+  window.refreshAlertsUI = function() {
+    // Re-render using cached last data, if available
+    if (window._lastOppData) render(window._lastOppData);
+  };
+
+  // Save last data and ensure scan caches it
+  const origScan = scan;
+  scan = async function() {
+    try {
+      const tfs = getActiveTfs();
+      if (tfs.length === 0) { render({ opportunities: [], watching: [] }); return; }
+      const url = '/api/opportunities?timeframes=' + encodeURIComponent(tfs.join(','))
+                + '&symbols=' + encodeURIComponent(SYMBOLS.join(','));
+      const resp = await fetch(url, { cache: 'no-store' });
+      if (!resp.ok) return;
+      const data = await resp.json();
+      window._lastOppData = data;
+      render(data);
+      lastEl.textContent = new Date().toLocaleTimeString([], {
+        hour: '2-digit', minute: '2-digit', second: '2-digit'
+      });
+      if ('Notification' in window && Notification.permission === 'granted') {
+        (data.opportunities || []).forEach(opp => {
+          const key = oppKey(opp);
+          if (!seen.has(key)) {
+            seen.add(key);
+            try {
+              new Notification('Nomad · ' + opp.symbol + ' ' + opp.side.toUpperCase(), {
+                body: opp.timeframe + ' · %B ' + opp.percent_b.toFixed(2) + ' · ' + fmtPrice(opp.price),
+                tag: key,
+              });
+            } catch (e) {}
+          }
+        });
+        try { sessionStorage.setItem(SEEN_KEY, JSON.stringify([...seen])); } catch (e) {}
+      }
+    } catch (e) {
+      console.warn('alert scan failed', e);
+    }
+  };
+
   scan();
   setInterval(scan, 30000);
 })();
+
+// Initial state: empty positions table
+updatePositionsHeader();
 
 // --- Strategies: click to toggle on/off ---
 (function stratToggle() {
