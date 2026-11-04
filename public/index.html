@@ -1,4 +1,5 @@
 <title>Nomad Bot</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0%25' stop-color='%239945FF'/><stop offset='100%25' stop-color='%2314F195'/></linearGradient></defs><path d='M2 26 L9 14 L14 22 L18 7 L22 18 L28 11 L30 26 Z' fill='url(%23g)'/></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -2881,3 +2882,233 @@ updatePositionsHeader();
   });
 })();
 </script>
+<style>
+/* ===================================================================
+   JUPITER-STYLE MOBILE LAYOUT
+   Fires at ≤1024px so it catches all phones + narrow browsers.
+   =================================================================== */
+
+@media (max-width: 1024px) {
+
+  /* Reset big-picture layout: single column, generous base font */
+  html { font-size: 17px; }
+  body { font-size: 17px !important; line-height: 1.5 !important; padding-bottom: 88px !important; }
+  .app { padding-block: 12px 24px !important; padding-inline: max(14px, env(safe-area-inset-left, 0)) max(14px, env(safe-area-inset-right, 0)) !important; }
+
+  /* HEADER — compact: brand + wallet connect only */
+  .header { margin-bottom: 14px !important; flex-wrap: nowrap !important; align-items: center !important; }
+  .brand { flex: 1; min-width: 0; }
+  .brand-row { font-size: 20px !important; gap: 8px !important; }
+  .brand-name { font-size: 20px !important; }
+  .brand-mark { width: 22px !important; height: 22px !important; }
+  .brand-tag { display: none !important; }
+  .header-actions { gap: 6px !important; flex-wrap: nowrap !important; align-items: center !important; }
+  .status-pill, .mode-switch, .btn[type="button"]:not(.btn-danger), .btn-danger { display: none !important; }
+  .btn-connect { padding: 10px 14px !important; font-size: 14px !important; border-radius: 10px !important; font-weight: 700 !important; }
+  .wallet-info { padding: 8px 10px !important; font-size: 12.5px !important; }
+
+  /* Hide all top-row clutter — tab chips, stats, market ticker, pro notice */
+  .tab-bar, .stats, .market-bar, #proNotice { display: none !important; }
+
+  /* The main grid becomes a straight single column */
+  .grid { grid-template-columns: 1fr !important; gap: 12px !important; }
+  .col { gap: 12px !important; display: flex !important; flex-direction: column !important; }
+
+  /* Kill prose. Everywhere. */
+  .panel-desc, .chart-legend, .trade-breakdown, .ot-warn:not(.hidden), .disc { display: none !important; }
+
+  /* Panels — chunky, borderless-top-rounded, full-width */
+  .panel {
+    padding: 16px 16px !important;
+    border-radius: 16px !important;
+    background: linear-gradient(180deg, rgba(255,255,255,0.065), rgba(255,255,255,0.02)) !important;
+  }
+  .panel-header { margin-bottom: 14px !important; padding-bottom: 12px !important; gap: 8px !important; align-items: center !important; }
+  .panel-title { font-size: 20px !important; font-weight: 700 !important; letter-spacing: -0.02em !important; }
+  .panel-kicker { font-size: 12px !important; margin-bottom: 6px !important; font-weight: 700 !important; letter-spacing: 0.14em !important; }
+  .panel-meta { font-size: 13px !important; }
+  .panel-collapse { width: 36px !important; height: 36px !important; }
+
+  /* CHART PANEL — Jupiter-style: symbol pills, big price, chart */
+  [data-panel-id="chart"] { padding: 14px !important; }
+  [data-panel-id="chart"] .panel-header { display: none !important; }
+
+  /* Inject symbol/price row at top of chart panel via pseudo-element isn't flexible — instead, make toolbar BIG */
+  .chart-toolbar {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 14px !important;
+    align-items: stretch !important;
+    margin-bottom: 14px !important;
+    padding-bottom: 14px !important;
+    border-bottom: 1px solid rgba(255,255,255,0.1) !important;
+  }
+  .chart-last {
+    order: -1 !important;
+    text-align: left !important;
+    font-size: 30px !important;
+    font-weight: 700 !important;
+    letter-spacing: -0.03em !important;
+    font-family: 'Plus Jakarta Sans', sans-serif !important;
+  }
+  .chart-last .lbl {
+    display: block !important;
+    font-size: 11px !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.2em !important;
+    color: var(--text-dim) !important;
+    margin-bottom: 4px !important;
+  }
+  .tf-group {
+    display: grid !important;
+    grid-template-columns: repeat(6, 1fr) !important;
+    gap: 2px !important;
+    width: 100% !important;
+    padding: 4px !important;
+    border-radius: 12px !important;
+  }
+  .tf-btn {
+    padding: 11px 6px !important;
+    font-size: 14px !important;
+    font-weight: 700 !important;
+    min-height: 44px !important;
+    border-radius: 8px !important;
+    letter-spacing: 0.02em !important;
+  }
+  #tv-chart { height: 320px !important; min-height: 300px !important; }
+
+  /* OPEN TRADE — big form inputs */
+  .ot-grid { grid-template-columns: 1fr !important; gap: 12px !important; }
+  .ot-label { font-size: 12.5px !important; font-weight: 700 !important; letter-spacing: 0.14em !important; }
+  .ot-input, .ot-select {
+    padding: 14px 14px !important;
+    font-size: 17px !important;
+    min-height: 54px !important;
+    border-radius: 11px !important;
+    font-weight: 500 !important;
+  }
+  .ot-toggle-group { padding: 4px !important; border-radius: 12px !important; }
+  .ot-toggle-group button { padding: 13px !important; font-size: 15px !important; min-height: 48px !important; font-weight: 700 !important; }
+  .ot-summary {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 10px !important;
+    padding: 14px !important;
+    font-size: 14.5px !important;
+    border-radius: 12px !important;
+  }
+  .ot-summary .v { font-size: 15.5px !important; font-weight: 700 !important; }
+  .ot-arm {
+    padding: 18px !important;
+    font-size: 17px !important;
+    min-height: 60px !important;
+    border-radius: 14px !important;
+    font-weight: 800 !important;
+    letter-spacing: 0 !important;
+  }
+
+  /* ALERTS */
+  .alert-tf-row {
+    display: grid !important;
+    grid-template-columns: repeat(6, 1fr) !important;
+    gap: 5px !important;
+    padding-bottom: 14px !important;
+    margin-bottom: 14px !important;
+  }
+  .alert-tf { padding: 11px 6px !important; font-size: 14px !important; font-weight: 700 !important; min-height: 44px !important; border-radius: 8px !important; }
+  .alert-item { padding: 14px !important; gap: 12px !important; border-radius: 12px !important; }
+  .alert-side { font-size: 14px !important; padding: 8px 10px !important; min-width: 56px !important; }
+  .alert-title { font-size: 16px !important; font-weight: 700 !important; }
+  .alert-sub { font-size: 13.5px !important; margin-top: 3px !important; }
+  .alert-arm { padding: 12px 18px !important; font-size: 15px !important; min-height: 46px !important; border-radius: 10px !important; font-weight: 700 !important; }
+  .alert-busy { font-size: 12.5px !important; padding: 10px 14px !important; }
+  .alert-empty { font-size: 14px !important; padding: 24px 0 !important; }
+  .watching-head { font-size: 12px !important; margin: 16px 0 8px !important; }
+  .watching-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)) !important; gap: 7px !important; }
+  .watching-pill { padding: 9px 11px !important; font-size: 13px !important; border-radius: 8px !important; }
+  .watching-pill .w-sym { font-size: 13.5px !important; font-weight: 800 !important; }
+  .watching-pill .w-tf { font-size: 11.5px !important; }
+  .watching-pill .w-pb { font-size: 14px !important; font-weight: 700 !important; }
+
+  /* POSITIONS */
+  .positions table { font-size: 15px !important; }
+  .positions th { font-size: 11px !important; padding: 10px 0 !important; font-weight: 700 !important; letter-spacing: 0.1em !important; }
+  .positions td { padding: 14px 0 !important; }
+  .pos-strat { font-size: 13px !important; margin-top: 5px !important; }
+  .tag { font-size: 11px !important; padding: 5px 10px !important; font-weight: 700 !important; }
+  .pos-empty { font-size: 14.5px !important; padding: 28px 16px !important; line-height: 1.55 !important; }
+
+  /* SIGNAL FEED */
+  .feed-item { grid-template-columns: 48px 1fr !important; gap: 12px !important; padding: 14px 0 !important; }
+  .feed-time { font-size: 13px !important; }
+  .feed-kind { font-size: 12px !important; font-weight: 700 !important; margin-bottom: 5px !important; }
+  .feed-body { font-size: 15px !important; line-height: 1.55 !important; }
+
+  /* STRATEGIES */
+  .strat-row { padding: 14px 15px !important; min-height: 60px !important; gap: 14px !important; border-radius: 12px !important; }
+  .strat-name { font-size: 16px !important; font-weight: 700 !important; }
+  .strat-tf { font-size: 13px !important; margin-top: 3px !important; }
+  .strat-state { font-size: 11px !important; padding: 6px 10px !important; font-weight: 700 !important; letter-spacing: 0.08em !important; }
+
+  /* RISK / SENTIMENT */
+  .risk-row { font-size: 15px !important; }
+  .risk-row .label { font-weight: 500 !important; }
+  .risk-row .val { font-size: 14.5px !important; font-weight: 600 !important; }
+  .sent-num { font-size: 32px !important; font-weight: 700 !important; }
+  .sent-label { font-size: 12.5px !important; font-weight: 700 !important; }
+  .gauge-ticks { font-size: 11.5px !important; }
+
+  /* iOS zoom guard */
+  input, select, textarea { font-size: 16px !important; }
+
+  /* BOTTOM TAB BAR — Jupiter-style */
+  .mobile-tabs {
+    display: grid !important;
+    grid-template-columns: repeat(4, 1fr) !important;
+    position: fixed !important;
+    bottom: 0 !important; left: 0 !important; right: 0 !important;
+    background: rgba(8,4,15,0.97) !important;
+    backdrop-filter: blur(28px) saturate(160%) !important;
+    -webkit-backdrop-filter: blur(28px) saturate(160%) !important;
+    border-top: 1px solid rgba(255,255,255,0.22) !important;
+    padding: 10px 6px calc(10px + env(safe-area-inset-bottom, 0)) !important;
+    z-index: 1000 !important;
+    gap: 2px !important;
+  }
+  .m-tab {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 4px !important;
+    background: transparent !important;
+    border: none !important;
+    color: var(--text-dim) !important;
+    padding: 8px 4px !important;
+    font-family: 'Plus Jakarta Sans', sans-serif !important;
+    font-size: 12px !important;
+    font-weight: 700 !important;
+    cursor: pointer !important;
+    border-radius: 12px !important;
+    min-height: 58px !important;
+    letter-spacing: 0.02em !important;
+  }
+  .m-tab svg { width: 24px !important; height: 24px !important; stroke-width: 2.2 !important; }
+  .m-tab.active { color: var(--text) !important; background: rgba(153,69,255,0.2) !important; }
+  .m-tab.active svg { color: var(--purple) !important; }
+
+  /* VIEW ROUTING — only show panels for the active tab */
+  body[data-view="chart"] .col > .panel:not([data-panel-id="chart"]) { display: none !important; }
+  body[data-view="trade"] .col > .panel:not([data-panel-id="open-trade"]) { display: none !important; }
+  body[data-view="positions"] .col > .panel:not([data-panel-id="positions"]):not([data-panel-id="signals"]) { display: none !important; }
+  body[data-view="more"] .col > .panel:not([data-panel-id="alerts"]):not([data-panel-id="strategies"]):not([data-panel-id="equity"]):not([data-panel-id="risk"]):not([data-panel-id="sentiment"]) { display: none !important; }
+}
+
+@media (max-width: 420px) {
+  .brand-row, .brand-name { font-size: 18px !important; }
+  .chart-last { font-size: 26px !important; }
+  #tv-chart { height: 290px !important; }
+  .panel-title { font-size: 18px !important; }
+  .tf-btn { font-size: 13px !important; }
+  .alert-tf { font-size: 13px !important; }
+}
+</style>
