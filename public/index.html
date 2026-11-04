@@ -3174,3 +3174,100 @@ updatePositionsHeader();
   });
 })();
 </script>
+
+<style>
+/* ============================================================
+   Mobile tab routing — reset inline display, force each view's panels visible
+   (overrides older section-chip JS that sets style.display=none)
+   ============================================================ */
+@media (max-width: 1024px) {
+  /* Reset: clear any inline display rules set by section-chip filter */
+  body[data-view] .col > .panel { display: none !important; }
+
+  /* Chart tab — just the chart */
+  body[data-view="chart"] .col > [data-panel-id="chart"] { display: block !important; }
+
+  /* Alerts tab — opportunity scanner */
+  body[data-view="alerts"] .col > [data-panel-id="alerts"] { display: block !important; }
+
+  /* Trade tab — order ticket */
+  body[data-view="trade"] .col > [data-panel-id="open-trade"] { display: block !important; }
+
+  /* Positions tab — open positions + signal feed */
+  body[data-view="positions"] .col > [data-panel-id="positions"],
+  body[data-view="positions"] .col > [data-panel-id="signals"] { display: block !important; }
+
+  /* More tab — strategies + risk + equity + sentiment */
+  body[data-view="more"] .col > [data-panel-id="strategies"],
+  body[data-view="more"] .col > [data-panel-id="risk"],
+  body[data-view="more"] .col > [data-panel-id="equity"],
+  body[data-view="more"] .col > [data-panel-id="sentiment"] { display: block !important; }
+
+  /* Now 5 tabs instead of 4 */
+  .mobile-tabs { grid-template-columns: repeat(5, 1fr) !important; }
+  .m-tab { font-size: 11px !important; padding: 8px 2px !important; }
+  .m-tab svg { width: 22px !important; height: 22px !important; }
+}
+</style>
+
+<script>
+/* Rebuild the bottom tab bar with sections that match OUR app */
+(function rebuildMobileTabs() {
+  const old = document.getElementById('mobile-tabs');
+  if (old) old.remove();
+
+  const nav = document.createElement('nav');
+  nav.className = 'mobile-tabs';
+  nav.id = 'mobile-tabs';
+  nav.setAttribute('aria-label', 'Sections');
+  nav.innerHTML = `
+    <button class="m-tab" data-view="chart" type="button">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 14l4-4 4 4 5-5"/></svg>
+      <span>Chart</span>
+    </button>
+    <button class="m-tab" data-view="alerts" type="button">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 1 1 12 0c0 7 3 8 3 8H3s3-1 3-8"/><path d="M10 20a2 2 0 0 0 4 0"/></svg>
+      <span>Alerts</span>
+    </button>
+    <button class="m-tab" data-view="trade" type="button">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v10M8 11h8"/></svg>
+      <span>Trade</span>
+    </button>
+    <button class="m-tab" data-view="positions" type="button">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5" width="16" height="14" rx="2"/><path d="M4 10h16M8 15h3"/></svg>
+      <span>Positions</span>
+    </button>
+    <button class="m-tab" data-view="more" type="button">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="6" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="12" cy="18" r="1.8"/></svg>
+      <span>More</span>
+    </button>
+  `;
+  document.body.appendChild(nav);
+
+  const tabs = nav.querySelectorAll('.m-tab');
+  let view = 'chart';
+  try { view = localStorage.getItem('nomad.mobileView') || 'chart'; } catch (e) {}
+  // Normalise any old saved values
+  if (!['chart','alerts','trade','positions','more'].includes(view)) view = 'chart';
+  document.body.dataset.view = view;
+  tabs.forEach(t => t.classList.toggle('active', t.dataset.view === view));
+
+  function clearInlineDisplayOnPanels() {
+    // Older code set panel.style.display='none' from the section-chip filter;
+    // with mobile tabs active, clear it so CSS !important rules can take over.
+    document.querySelectorAll('.col > .panel').forEach(p => { p.style.display = ''; });
+  }
+  clearInlineDisplayOnPanels();
+
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      const v = tab.dataset.view;
+      document.body.dataset.view = v;
+      tabs.forEach(t => t.classList.toggle('active', t === tab));
+      try { localStorage.setItem('nomad.mobileView', v); } catch (e) {}
+      clearInlineDisplayOnPanels();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  });
+})();
+</script>
