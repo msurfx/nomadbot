@@ -1,0 +1,13 @@
+[project]
+name = "nomadbot"
+version = "0.7.0"
+description = "Nomad Bot — Solana trading bot dashboard"
+requires-python = ">=3.10"
+dependencies = [
+    "requests>=2.31",
+    "python-dotenv>=1.0",
+]
+
+[tool.vercel]
+entrypoint = "scripts.serve_dashboard:Handler"
+include_files = ["dashboard/**"]

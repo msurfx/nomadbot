@@ -1,0 +1,9 @@
+# Dev-only dependencies for running the local backtester and signal scripts.
+# The hosted dashboard (requirements.txt) doesn't need any of these.
+
+-r requirements.txt
+
+pandas>=2.0
+numpy>=1.24
+pyyaml>=6.0
+pyarrow>=14.0

@@ -1,0 +1,11 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "functions": {
+    "scripts/serve_dashboard.py": {
+      "includeFiles": "dashboard/**"
+    }
+  },
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/scripts/serve_dashboard" }
+  ]
+}
