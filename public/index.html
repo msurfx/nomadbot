@@ -3112,3 +3112,65 @@ updatePositionsHeader();
   .alert-tf { font-size: 13px !important; }
 }
 </style>
+
+<nav class="mobile-tabs" id="mobile-tabs" aria-label="Sections">
+  <button class="m-tab" data-view="chart" type="button">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 14l4-4 4 4 5-5"/></svg>
+    <span>Chart</span>
+  </button>
+  <button class="m-tab" data-view="trade" type="button">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v10M8 11h8"/></svg>
+    <span>Trade</span>
+  </button>
+  <button class="m-tab" data-view="positions" type="button">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5" width="16" height="14" rx="2"/><path d="M4 10h16M8 15h3"/></svg>
+    <span>Positions</span>
+  </button>
+  <button class="m-tab" data-view="more" type="button">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="18" cy="12" r="1.5"/></svg>
+    <span>More</span>
+  </button>
+</nav>
+
+<style>
+/* Fix header on mobile — stack brand + wallet so wallet never overlaps logo */
+@media (max-width: 1024px) {
+  .header {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 10px !important;
+  }
+  .brand { width: 100% !important; }
+  .header-actions {
+    width: 100% !important;
+    justify-content: space-between !important;
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+  }
+  .btn-connect {
+    flex: 1 !important;
+    max-width: 260px !important;
+  }
+  .wallet-info { flex: 1 !important; max-width: 260px !important; }
+}
+</style>
+
+<script>
+(function initMobileTabs() {
+  const tabs = document.querySelectorAll('.m-tab');
+  if (!tabs.length) return;
+  let view = 'chart';
+  try { view = localStorage.getItem('nomad.mobileView') || 'chart'; } catch (e) {}
+  document.body.dataset.view = view;
+  tabs.forEach(t => t.classList.toggle('active', t.dataset.view === view));
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      const v = tab.dataset.view;
+      document.body.dataset.view = v;
+      tabs.forEach(t => t.classList.toggle('active', t === tab));
+      try { localStorage.setItem('nomad.mobileView', v); } catch (e) {}
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  });
+})();
+</script>
