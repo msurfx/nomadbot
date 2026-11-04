@@ -330,9 +330,18 @@ class Handler(BaseHTTPRequestHandler):
     def _json(self, status: int, payload) -> None:
         self._send(status, json.dumps(payload).encode(), "application/json")
 
+    @staticmethod
+    def _strip_vercel_prefix(path: str) -> str:
+        for prefix in ("/api/index.py", "/api/index", "/scripts/serve_dashboard"):
+            if path == prefix:
+                return "/"
+            if path.startswith(prefix + "/"):
+                return path[len(prefix):]
+        return path
+
     def do_GET(self) -> None:  # noqa: N802
         u = urlparse(self.path)
-        path = u.path
+        path = self._strip_vercel_prefix(u.path)
         qs = parse_qs(u.query)
 
         if path in ("/", "/index.html"):
@@ -410,7 +419,7 @@ class Handler(BaseHTTPRequestHandler):
 
     def do_POST(self) -> None:  # noqa: N802
         u = urlparse(self.path)
-        path = u.path
+        path = self._strip_vercel_prefix(u.path)
         length = int(self.headers.get("Content-Length", 0))
         raw = self.rfile.read(length) if length > 0 else b""
         try:
