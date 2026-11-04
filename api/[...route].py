@@ -1,6 +1,10 @@
-"""Vercel entrypoint. Vercel's Python runtime does static analysis for a
-top-level `handler` name, so we declare a real class definition rather than an
-import alias."""
+"""Vercel catch-all serverless function for every /api/* request.
+
+Vercel's dynamic routing sends anything matching /api/<something>[/<more>]
+here with the original URL preserved (no rewrite), so self.path inside the
+handler is exactly what the browser requested. We then delegate to our
+BaseHTTPRequestHandler from scripts/serve_dashboard.py.
+"""
 import sys
 from pathlib import Path
 

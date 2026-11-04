@@ -30,8 +30,13 @@ except ImportError:
 ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(ROOT))
 
-DASHBOARD = ROOT / "dashboard" / "index.html"
-ABOUT = ROOT / "dashboard" / "about.html"
+# HTML lives in /public (Vercel serves /public/* statically; local server
+# reads the same files). Falls back to /dashboard if /public is missing.
+PUBLIC_DIR = ROOT / "public"
+LEGACY_DIR = ROOT / "dashboard"
+_HTML_ROOT = PUBLIC_DIR if PUBLIC_DIR.exists() else LEGACY_DIR
+DASHBOARD = _HTML_ROOT / "index.html"
+ABOUT = _HTML_ROOT / "about.html"
 PORT = 8787
 
 COINGECKO = "https://api.coingecko.com/api/v3"
