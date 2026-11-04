@@ -2979,3 +2979,10 @@ updatePositionsHeader();
   .panel { padding: 12px 14px; }
 }
 </style>
+<style>
+/* Force the column order: Chart first, then Open Trade, Positions, Signals */
+.col > [data-panel-id="chart"]      { order: -10 !important; }
+.col > [data-panel-id="open-trade"] { order:   0 !important; }
+.col > [data-panel-id="positions"]  { order:   1 !important; }
+.col > [data-panel-id="signals"]    { order:   2 !important; }
+</style>
