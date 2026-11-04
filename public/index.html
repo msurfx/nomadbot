@@ -2986,3 +2986,138 @@ updatePositionsHeader();
 .col > [data-panel-id="positions"]  { order:   1 !important; }
 .col > [data-panel-id="signals"]    { order:   2 !important; }
 </style>
+<nav class="mobile-tabs" id="mobile-tabs" aria-label="Sections">
+  <button class="m-tab" data-view="chart" type="button">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 14l4-4 4 4 5-5"/></svg>
+    <span>Chart</span>
+  </button>
+  <button class="m-tab" data-view="trade" type="button">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v10M8 11h8"/></svg>
+    <span>Trade</span>
+  </button>
+  <button class="m-tab" data-view="positions" type="button">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5" width="16" height="14" rx="2"/><path d="M4 10h16M8 15h3"/></svg>
+    <span>Positions</span>
+  </button>
+  <button class="m-tab" data-view="more" type="button">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="18" cy="12" r="1.5"/></svg>
+    <span>More</span>
+  </button>
+</nav>
+
+<style>
+.mobile-tabs { display: none; }
+
+@media (max-width: 768px) {
+  body { padding-bottom: 80px !important; font-size: 16.5px !important; }
+
+  /* Kill every description and prose explainer */
+  .panel-desc, .brand-tag, .chart-legend, .disc,
+  .trade-breakdown, .ot-warn:not(.hidden) { display: none !important; }
+
+  /* Hide the top filter chips — bottom tabs replace them */
+  .tab-bar { disay: none !important; }
+
+  /* Chunky, legible type everywhere */
+  .panel-title { font-size: 21px !important; font-weight: 700 !important; }
+  .panel-kicker { font-size: 13px !important; font-weight: 700 !important; }
+  .panel-meta { font-size: 13px !important; font-weight: 500 !important; }
+  .stat-value { font-size: 24px !important; font-weight: 700 !important; }
+  .stat-label { font-size: 13px !important; font-weight: 600 !important; }
+  .stat-delta { font-size: 13px !important; }
+  .mb-price { font-size: 18px !important; font-weight: 700 !important; }
+  .mb-sym { font-size: 14px !important; font-weight: 700 !important; }
+  .mb-change { font-size: 13.5px !important; font-weight: 600 !important; }
+  .alert-title { font-size: 16px !important; font-weight: 700 !important; }
+  .alert-sub { font-size: 14px !important; }
+  .feed-body { font-size: 15.5px !important; line-height: 1.5 !important; }
+  .feed-kind { font-size: 12.5px !important; font-weight: 700 !important; }
+  .ot-input, .ot-select { font-size: 17px !important; min-height: 52px !important; }
+  .ot-label { font-size: 13px !important; font-weight: 700 !important; }
+  .strat-name { font-size: 16px !important; font-weight: 700 !important; }
+  .strat-tf { font-size: 13.5px !important; }
+  .positions table { font-size: 15px !important; }
+  .positions td { padding: 14px 0 !important; }
+  .pos-strat { font-size: 13px !important; margin-top: 5px !important; }
+  .tf-btn { font-size: 15px !important; font-weight: 700 !important; min-height: 46px !important; padding: 10px 14px !important; }
+  .ot-arm { font-size: 17px !important; min-height: 58px !important; font-weight: 700 !important; }
+  .alert-arm { font-size: 14.5px !important; font-weight: 700 !important; min-height: 46px !important; padding: 12px 16px !important; }
+  .alert-tf { font-size: 14px !important; font-weight: 700 !important; min-height: 44px !important; }
+  .risk-row { font-size: 15px !important; }
+  .risk-row .val { font-size: 14px !important; }
+  .watching-pill { font-size: 13px !important; padding: 9px 12px !important; }
+  .watching-pill .w-sym { font-size: 14px !important; font-weight: 700 !important; }
+  .watching-pill .w-pb { font-size: 14px !important; font-weight: 700 !important; }
+  .panel { padding: 20px 20px !important; border-radius: 16px !important; }
+  .panel-header { margin-bottom: 16px !important; padding-bottom: 14px !important; }
+
+  /* Bottom tab bar */
+  .mobile-tabs {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    background: rgba(10,6,20,0.96);
+    backdrop-filter: blur(28px) saturate(160%);
+    -webkit-backdrop-filter: blur(28px) saturate(160%);
+    border-top: 1px solid rgba(255,255,255,0.2);
+    padding: 8px 6px calc(10px + env(safe-area-inset-bottom, 0));
+    z-index: 100;
+    gap: 2px;
+  }
+  .m-tab {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    background: transparent;
+    border: none;
+    color: var(--text-dim);
+    padding: 10px 4px;
+    font-family: var(--font-sans);
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    border-radius: 12px;
+    min-height: 60px;
+    letter-spacing: 0.02em;
+  }
+  .m-tab svg { width: 24px; height: 24px; }
+  .m-tab.active {
+    color: var(--text);
+    background: rgba(153,69,255,0.18);
+  }
+  .m-tab.active svg { color: var(--purple); }
+
+  /* Jupiter-style single-view routing */
+  body[data-view="chart"] .col > .panel:not([data-panel-id="chart"]):not([data-panel-id="alerts"]) { display: none !important; }
+  body[data-view="trade"] .col > .panel:not([data-panel-id="open-trade"]) { display: none !important; }
+  body[data-view="positions"] .col > .panel:not([data-panel-id="positions"]):not([data-panel-id="signals"]) { display: none !important; }
+  body[data-view="more"] .col > .panel:not([data-panel-id="strategies"]):not([data-panel-id="equity"]):not([data-panel-id="risk"]):not([data-panel-id="sentiment"]) { display: none !important; }
+
+  /* Hide stats + ticker on non-chart views — gives panels full screen */
+  body[data-view="trade"] .stats, body[data-view="trade"] .market-bar,
+  body[data-view="positions"] .stats, body[data-view="positions"] .market-r,
+  body[data-view="more"] .stats, body[data-view="more"] .market-bar { display: none !important; }
+}
+</style>
+
+<script>
+(function initMobileTabs() {
+  const tabs = document.querySelectorAll('.m-tab');
+  if (!tabs.length) return;
+  let view = 'chart';
+  try { view = localStorage.getItem('nomad.mobileView') || 'chart'; } catch (e) {}
+  document.body.dataset.view = view;
+  tabs.forEach(t => t.classList.toggle('active', t.dataset.view === view));
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      const v = tab.dataset.view;
+      document.body.dataset.view = v;
+      tabs.forEach(t => t.classList.toggle('active', t === tab));
+      try { localStorage.setItem('nomad.mobileView', v); } catch (e) {}
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  });
+})();
+</script>
