@@ -1083,6 +1083,53 @@ body::after {
   color: var(--text-dim);
   letter-spacing: -0.01em;
 }
+.watching-head {
+  font-size: 10.5px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  margin: 16px 0 8px;
+  font-weight: 500;
+}
+.watching-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 6px;
+}
+.watching-pill {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 7px 10px;
+  border-radius: 7px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid var(--border);
+  font-size: 11.5px;
+  font-family: var(--font-mono);
+  color: var(--text-dim);
+  gap: 6px;
+}
+.watching-pill.near {
+  background: rgba(153,69,255,0.1);
+  border-color: rgba(153,69,255,0.3);
+  color: var(--text);
+}
+.watching-pill .w-sym {
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--text);
+  font-size: 11px;
+}
+.watching-pill .w-tf {
+  color: var(--text-faint);
+  font-size: 10.5px;
+  letter-spacing: 0.02em;
+}
+.watching-pill .w-pb {
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+  font-weight: 500;
+}
 
 /* ---- Pro mode ---- */
 .pro-notice {
@@ -1262,9 +1309,7 @@ body.pro-on .strat-row.pro .s-pro-active { display: inline-block; }
             <label class="ot-label" for="ot-market">Market</label>
             <select class="ot-select" id="ot-market">
               <option value="SOL-PERP">SOL-PERP · Drift</option>
-              <option value="JUP-PERP">JUP-PERP · Drift</option>
               <option value="BTC-PERP">BTC-PERP · Drift</option>
-              <option value="ETH-PERP">ETH-PERP · Drift</option>
             </select>
           </div>
 
@@ -1443,7 +1488,7 @@ body.pro-on .strat-row.pro .s-pro-active { display: inline-block; }
           <div class="panel-head">
             <div class="panel-kicker k-live">Alerts</div>
             <div class="panel-title">Opportunity scanner</div>
-            <div class="panel-desc">Watches SOL, BTC, ETH on your active timeframes. Fires when the current candle sits near a Bollinger band — the setup Nomad's strategies look for.</div>
+            <div class="panel-desc">Watches SOL and BTC on your active timeframes. Fires an alert when %B drops below 0.15 (near lower band = long setup) or above 0.85 (upper band = short). Pills below show live %B even when nothing's firing.</div>
           </div>
           <div class="panel-meta"><span id="opp-count">0</span> live</div>
         </div>
@@ -2090,7 +2135,7 @@ function recomputePnL() {
 
   const TF_KEY = 'nomad.alert.tfs';
   const SEEN_KEY = 'nomad.alert.seen';
-  const SYMBOLS = ['SOL', 'BTC', 'ETH'];
+  const SYMBOLS = ['SOL', 'BTC'];
 
   function getActiveTfs() {
     return [...tfRow.querySelectorAll('.alert-tf.on')].map(b => b.dataset.tf);
@@ -2148,14 +2193,33 @@ function recomputePnL() {
     if (otPanel) otPanel.scrollIntoView({ behavior: 'smooth', block: 'center' });
   }
 
-  function render(opps) {
+  function watchingHTML(watching) {
+    if (!watching || watching.length === 0) return '';
+    const items = watching.map(w => {
+      const pb = w.percent_b;
+      const near = (pb <= 0.25 || pb >= 0.75);
+      return `<div class="watching-pill ${near ? 'near' : ''}" title="BB lower ${fmtPrice(w.bb_lower)} · mid ${fmtPrice(w.bb_mid)} · upper ${fmtPrice(w.bb_upper)}">
+        <span class="w-sym">${w.symbol}</span>
+        <span class="w-tf">${w.timeframe}</span>
+        <span class="w-pb">${pb.toFixed(2)}</span>
+      </div>`;
+    }).join('');
+    return `<div class="watching-head">Scanning · %B</div><div class="watching-grid">${items}</div>`;
+  }
+
+  function render(data) {
+    const opps = data.opportunities || [];
+    const watching = data.watching || [];
+    countEl.textContent = opps.length;
+
     if (opps.length === 0) {
-      list.innerHTML = '<div class="alert-empty">No setups on your active timeframes right now. Scanning every 30 seconds.</div>';
-      countEl.textContent = '0';
+      let html = '<div class="alert-empty">No setups firing yet. The scanner is watching every 30 seconds — pills below show the live %B for each market/timeframe.</div>';
+      html += watchingHTML(watching);
+      list.innerHTML = html;
       return;
     }
-    countEl.textContent = opps.length;
-    const html = opps.map(o => {
+
+    const alertHtml = opps.map(o => {
       const arrow = o.side === 'long' ? '↑' : '↓';
       const cls = o.side === 'long' ? 'pos' : 'neg';
       return `<div class="alert-item">
@@ -2167,7 +2231,7 @@ function recomputePnL() {
         <button class="alert-arm" type="button" data-sym="${o.symbol}" data-side="${o.side}" data-tf="${o.timeframe}">Arm</button>
       </div>`;
     }).join('');
-    list.innerHTML = html;
+    list.innerHTML = alertHtml + watchingHTML(watching);
     list.querySelectorAll('.alert-arm').forEach(btn => {
       btn.addEventListener('click', () => {
         prefillOrderTicket(btn.dataset.sym, btn.dataset.side, btn.dataset.tf);
@@ -2188,7 +2252,7 @@ function recomputePnL() {
       if (!resp.ok) return;
       const data = await resp.json();
       const opps = data.opportunities || [];
-      render(opps);
+      render(data);
       lastEl.textContent = new Date().toLocaleTimeString([], {
         hour: '2-digit', minute: '2-digit', second: '2-digit'
       });

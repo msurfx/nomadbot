@@ -351,18 +351,13 @@ def arm_trade(cfg: dict) -> dict:
     return entry
 
 
-def detect_bb_opportunity(
+def compute_bb_status(
     candles: list[dict],
     period: int = 20,
     std_mult: float = 2.0,
-    long_threshold: float = 0.10,
-    short_threshold: float = 0.90,
 ) -> dict | None:
-    """Return a signal dict if the latest candle is near a BB band, else None.
-
-    %B <= 0.10 → close to the lower band → potential long reversion.
-    %B >= 0.90 → close to the upper band → potential short reversion.
-    """
+    """Compute BB status for the latest candle. Always returns the %B value if
+    enough history exists, regardless of whether it crosses a threshold."""
     if len(candles) < period + 1:
         return None
     closes = [c["close"] for c in candles]
@@ -376,17 +371,7 @@ def detect_bb_opportunity(
     if upper == lower:
         return None
     pct_b = (close - lower) / (upper - lower)
-
-    side = None
-    if pct_b <= long_threshold:
-        side = "long"
-    elif pct_b >= short_threshold:
-        side = "short"
-    if not side:
-        return None
-
     return {
-        "side": side,
         "percent_b": round(pct_b, 4),
         "price": round(close, 6),
         "bb_lower": round(lower, 6),
@@ -395,9 +380,18 @@ def detect_bb_opportunity(
     }
 
 
-def scan_opportunities(symbols: list[str], timeframes: list[str]) -> list[dict]:
-    """Run a BB opportunity scan across the requested symbols and timeframes."""
-    out = []
+def scan_opportunities(
+    symbols: list[str],
+    timeframes: list[str],
+    long_threshold: float = 0.15,
+    short_threshold: float = 0.85,
+) -> tuple[list[dict], list[dict]]:
+    """Scan symbols × timeframes. Returns (firing, watching).
+
+    firing: %B crosses long/short threshold → an actual entry setup
+    watching: %B inside the neutral zone → still scanning, nothing fired
+    """
+    firing, watching = [], []
     now = int(time.time())
     for sym in symbols:
         full_sym = f"{sym}/USD"
@@ -406,15 +400,24 @@ def scan_opportunities(symbols: list[str], timeframes: list[str]) -> list[dict]:
                 continue
             try:
                 candles = fetch_candles(full_sym, tf)
-                opp = detect_bb_opportunity(candles)
-                if opp:
-                    opp["symbol"] = sym
-                    opp["timeframe"] = tf
-                    opp["detected_at"] = now
-                    out.append(opp)
+                status = compute_bb_status(candles)
+                if not status:
+                    continue
+                status["symbol"] = sym
+                status["timeframe"] = tf
+                status["detected_at"] = now
+                pb = status["percent_b"]
+                if pb <= long_threshold:
+                    status["side"] = "long"
+                    firing.append(status)
+                elif pb >= short_threshold:
+                    status["side"] = "short"
+                    firing.append(status)
+                else:
+                    watching.append(status)
             except Exception as e:
                 print(f"  [opp] {sym} {tf} failed: {e}", file=sys.stderr)
-    return out
+    return firing, watching
 
 
 def get_wallet(pubkey: str) -> dict:
@@ -517,18 +520,25 @@ class Handler(BaseHTTPRequestHandler):
 
         if path == "/api/opportunities":
             tf_str = qs.get("timeframes", ["5m,15m,1h"])[0]
-            sym_str = qs.get("symbols", ["SOL,BTC,ETH"])[0]
+            sym_str = qs.get("symbols", ["SOL,BTC"])[0]
             tfs = [x.strip() for x in tf_str.split(",") if x.strip()]
             syms = [x.strip().upper() for x in sym_str.split(",") if x.strip()]
+            # Only allow traded symbols
+            syms = [s for s in syms if s in ("SOL", "BTC")]
+            if not syms:
+                syms = ["SOL", "BTC"]
             key = f"opp:{','.join(syms)}:{','.join(tfs)}"
+
+            def do_scan():
+                firing, watching = scan_opportunities(syms, tfs)
+                return json.dumps({
+                    "generated_at": int(time.time()),
+                    "opportunities": firing,
+                    "watching": watching,
+                }).encode()
+
             try:
-                body = cached(
-                    key, ttl=20.0,
-                    fetch=lambda: json.dumps({
-                        "generated_at": int(time.time()),
-                        "opportunities": scan_opportunities(syms, tfs),
-                    }).encode(),
-                )
+                body = cached(key, ttl=20.0, fetch=do_scan)
                 self._send(200, body, "application/json")
             except Exception as e:
                 self._json(500, {"error": str(e)})
