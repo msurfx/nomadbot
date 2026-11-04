@@ -50,6 +50,7 @@ COINGECKO_IDS = {
 
 CRYPTOCOMPARE = "https://min-api.cryptocompare.com/data/v2"
 TIMEFRAMES_CC = {
+    "1m":  ("histominute", 1,   300),
     "5m":  ("histominute", 5,   288),
     "15m": ("histominute", 15,  192),
     "1h":  ("histohour",   1,   168),
@@ -57,8 +58,20 @@ TIMEFRAMES_CC = {
     "1d":  ("histoday",    1,   120),
 }
 
+# Kraken REST OHLC — primary (reliable, no auth, true interval control)
+KRAKEN = "https://api.kraken.com/0/public/OHLC"
+KRAKEN_INTERVAL_MIN = {"1m": 1, "5m": 5, "15m": 15, "1h": 60, "4h": 240, "1d": 1440}
+KRAKEN_PAIRS = {
+    "SOL": "SOLUSD",
+    "BTC": "XBTUSD",
+    "ETH": "ETHUSD",
+    "ZEC": "ZECUSD",
+    # JUP isn't on Kraken; falls through to CoinGecko
+}
+
 # Jupiter-style TF -> CoinGecko days (CG picks the resolution for us)
 TIMEFRAMES_CG = {
+    "1m":  1,
     "5m":  1,
     "15m": 1,
     "1h":  7,
@@ -197,10 +210,61 @@ def fetch_candles_cg(symbol: str, tf: str) -> list[dict]:
     return candles
 
 
+def fetch_candles_kraken(symbol: str, tf: str) -> list[dict]:
+    interval = KRAKEN_INTERVAL_MIN.get(tf)
+    if not interval:
+        raise ValueError(f"kraken: no interval for {tf}")
+    base = symbol.split("/")[0]
+    pair = KRAKEN_PAIRS.get(base)
+    if not pair:
+        raise ValueError(f"kraken: no pair for {base}")
+
+    r = requests.get(
+        KRAKEN,
+        params={"pair": pair, "interval": interval},
+        timeout=15,
+    )
+    r.raise_for_status()
+    body = r.json()
+    if body.get("error"):
+        raise RuntimeError(f"kraken: {body['error']}")
+    result = body.get("result", {})
+    # Pair key is pair-dependent (e.g. SOLUSD, XXBTZUSD). Grab the first list.
+    bars = None
+    for key, val in result.items():
+        if key != "last" and isinstance(val, list):
+            bars = val
+            break
+    if not bars:
+        raise RuntimeError("kraken: no bars in result")
+
+    return [
+        {
+            "time": int(bar[0]),
+            "open": float(bar[1]),
+            "high": float(bar[2]),
+            "low": float(bar[3]),
+            "close": float(bar[4]),
+            "volume": float(bar[6]),
+        }
+        for bar in bars
+    ]
+
+
 def fetch_candles(symbol: str, tf: str) -> list[dict]:
-    """Try CryptoCompare first, fall back to CoinGecko if it fails or empty."""
+    """Primary: Kraken (real interval control, no auth). Fallback: CoinGecko."""
     if tf not in TIMEFRAMES_CC:
         raise ValueError(f"unknown timeframe {tf}; try {list(TIMEFRAMES_CC)}")
+
+    # Kraken first — proper intraday intervals with volume
+    try:
+        out = fetch_candles_kraken(symbol, tf)
+        if out:
+            return out
+    except Exception as e:
+        print(f"  [candles] kraken failed, trying cryptocompare: {e}", file=sys.stderr)
+
+    # CryptoCompare second (requires key now, but try)
     try:
         out = fetch_candles_cc(symbol, tf)
         if out:
@@ -208,6 +272,7 @@ def fetch_candles(symbol: str, tf: str) -> list[dict]:
     except Exception as e:
         print(f"  [candles] cryptocompare failed, falling back to coingecko: {e}",
               file=sys.stderr)
+
     return fetch_candles_cg(symbol, tf)
 
 

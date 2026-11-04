@@ -260,17 +260,19 @@ body::after {
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 1px;
-  background: linear-gradient(180deg, rgba(255,255,255,0.055), rgba(255,255,255,0.02));
-  backdrop-filter: blur(28px) saturate(150%);
-  -webkit-backdrop-filter: blur(28px) saturate(150%);
-  border: 1px solid rgba(255,255,255,0.14);
+  background: linear-gradient(180deg, rgba(255,255,255,0.13), rgba(255,255,255,0.035));
+  backdrop-filter: blur(32px) saturate(160%);
+  -webkit-backdrop-filter: blur(32px) saturate(160%);
+  border: 1px solid rgba(255,255,255,0.26);
   border-radius: 14px;
   padding: 3px;
   margin-bottom: 20px;
   overflow: hidden;
   box-shadow:
-    inset 0 1px 0 rgba(255,255,255,0.08),
-    0 1px 2px rgba(0,0,0,0.2);
+    inset 0 1px 0 rgba(255,255,255,0.28),
+    inset 0 -1px 0 rgba(0,0,0,0.18),
+    0 12px 30px rgba(0,0,0,0.5),
+    0 3px 8px rgba(0,0,0,0.25);
 }
 .market-chip {
   display: flex;
@@ -332,16 +334,18 @@ body::after {
   .market-chip + .market-chip { border-left: 1px solid var(--border); }
 }
 .stat {
-  background: linear-gradient(180deg, rgba(255,255,255,0.055), rgba(255,255,255,0.02));
-  backdrop-filter: blur(28px) saturate(150%);
-  -webkit-backdrop-filter: blur(28px) saturate(150%);
-  border: 1px solid rgba(255,255,255,0.14);
+  background: linear-gradient(180deg, rgba(255,255,255,0.13), rgba(255,255,255,0.035));
+  backdrop-filter: blur(32px) saturate(160%);
+  -webkit-backdrop-filter: blur(32px) saturate(160%);
+  border: 1px solid rgba(255,255,255,0.26);
   border-radius: 14px;
   padding: 16px 18px;
   min-width: 0;
   box-shadow:
-    inset 0 1px 0 rgba(255,255,255,0.08),
-    0 1px 2px rgba(0,0,0,0.2);
+    inset 0 1px 0 rgba(255,255,255,0.28),
+    inset 0 -1px 0 rgba(0,0,0,0.18),
+    0 12px 30px rgba(0,0,0,0.5),
+    0 3px 8px rgba(0,0,0,0.25);
 }
 .stat-label {
   font-size: 11.5px;
@@ -378,16 +382,21 @@ body::after {
 .col { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
 
 .panel {
-  background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.025));
-  backdrop-filter: blur(32px) saturate(150%);
-  -webkit-backdrop-filter: blur(32px) saturate(150%);
-  border: 1px solid rgba(255,255,255,0.14);
-  border-radius: 16px;
+  position: relative;
+  background: linear-gradient(180deg, rgba(255,255,255,0.14), rgba(255,255,255,0.04));
+  backdrop-filter: blur(36px) saturate(160%);
+  -webkit-backdrop-filter: blur(36px) saturate(160%);
+  border: 1px solid rgba(255,255,255,0.26);
+  border-radius: 18px;
   padding: 22px 24px;
   min-width: 0;
   box-shadow:
-    inset 0 1px 0 rgba(255,255,255,0.08),
-    0 1px 2px rgba(0,0,0,0.25);
+    inset 0 1px 0 rgba(255,255,255,0.28),
+    inset 0 -1px 0 rgba(0,0,0,0.2),
+    inset 1px 0 0 rgba(255,255,255,0.08),
+    inset -1px 0 0 rgba(0,0,0,0.08),
+    0 16px 40px rgba(0,0,0,0.55),
+    0 4px 10px rgba(0,0,0,0.3);
 }
 
 .panel-header {
@@ -592,7 +601,12 @@ body::after {
   border-radius: 10px;
   border: 1px solid var(--border);
   min-width: 0;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, opacity 0.15s;
 }
+.strat-row:hover { background: var(--panel-hi); border-color: var(--border-strong); }
+.strat-row[data-on="0"] { opacity: 0.45; }
+.strat-row[data-on="0"]:hover { opacity: 0.7; }
 .strat-row.pro { opacity: 0.7; }
 .strat-name { font-size: 13px; font-weight: 500; }
 .strat-tf {
@@ -1103,15 +1117,16 @@ body.pro-on .strat-row.pro .s-pro-active { display: inline-block; }
       <div class="panel">
         <div class="panel-header">
           <div class="panel-head">
-            <div class="panel-kicker k-live">Active trade</div>
-            <div class="panel-title">SOL-PERP long</div>
-            <div class="panel-desc">Entry at $187.20 with Bollinger mean-reversion. Targets at midline and upper band, stop below the lower band.</div>
+            <div class="panel-kicker k-live">Live chart</div>
+            <div class="panel-title">SOL-PERP</div>
+            <div class="panel-desc">Real-time SOL candles with Bollinger bands. The purple arrow and target lines show where an example BB mean-reversion trade would sit — illustrative, not a live position.</div>
           </div>
-          <div class="panel-meta pos">+£14.20</div>
+          <div class="panel-meta" id="active-price">—</div>
         </div>
 
         <div class="chart-toolbar">
           <div class="tf-group" role="tablist" aria-label="Chart timeframe">
+            <button class="tf-btn" type="button" data-tf="1m">1m</button>
             <button class="tf-btn" type="button" data-tf="5m">5m</button>
             <button class="tf-btn" type="button" data-tf="15m">15m</button>
             <button class="tf-btn on" type="button" data-tf="1h">1h</button>
@@ -1248,40 +1263,40 @@ body.pro-on .strat-row.pro .s-pro-active { display: inline-block; }
           <div class="panel-head">
             <div class="panel-kicker k-engine">Engine</div>
             <div class="panel-title">Strategies</div>
-            <div class="panel-desc">Which trading bots are armed, firing, or standing down right now.</div>
+            <div class="panel-desc">Click any strategy to toggle it on or off. The bot only fires signals from strategies you've armed.</div>
           </div>
           <div class="panel-meta" id="stratCount">Cruise · 4 active</div>
         </div>
-        <div class="strat">
-          <div class="strat-row">
+        <div class="strat" id="strat-list">
+          <div class="strat-row" data-strat="scalper" data-on="1">
             <div>
               <div class="strat-name">Scalper BB</div>
               <div class="strat-tf">1m · 5m · majors</div>
             </div>
             <span class="strat-state s-armed">Armed</span>
           </div>
-          <div class="strat-row">
+          <div class="strat-row" data-strat="swing" data-on="1">
             <div>
               <div class="strat-name">Swing BB</div>
               <div class="strat-tf">15m · 1h</div>
             </div>
             <span class="strat-state s-firing">Firing</span>
           </div>
-          <div class="strat-row">
+          <div class="strat-row" data-strat="trend" data-on="1">
             <div>
               <div class="strat-name">Trend rider</div>
               <div class="strat-tf">1h · 4h · pullback</div>
             </div>
             <span class="strat-state s-armed">Armed</span>
           </div>
-          <div class="strat-row">
+          <div class="strat-row" data-strat="macro" data-on="0">
             <div>
               <div class="strat-name">Macro position</div>
               <div class="strat-tf">1d · spot · sentiment</div>
             </div>
-            <span class="strat-state s-off">Flat</span>
+            <span class="strat-state s-off">Off</span>
           </div>
-          <div class="strat-row pro">
+          <div class="strat-row pro" data-strat="candle" data-on="0">
             <div>
               <div class="strat-name">Candle bounce</div>
               <div class="strat-tf">1m · 5m · wick rejection</div>
@@ -1471,38 +1486,50 @@ async function loadChart(tf) {
       if (loading) loading.textContent = 'No candle data';
       return;
     }
-    candleSeries.setData(candles);
+    try {
+      candleSeries.setData(candles);
+    } catch (e) {
+      console.error('setData failed', e);
+      if (loading) loading.textContent = 'Chart data invalid';
+      return;
+    }
     if (loading) loading.remove();
 
-    // Volume histogram on its own price scale, pinned to the bottom third
-    if (candles.some(c => c.volume != null)) {
-      const volSeries = chart.addHistogramSeries({
-        priceFormat: { type: 'volume' },
-        priceScaleId: 'volume',
-        lastValueVisible: false,
-        priceLineVisible: false,
-      });
-      chart.priceScale('volume').applyOptions({
-        scaleMargins: { top: 0.78, bottom: 0 },
-      });
-      volSeries.setData(candles.map(c => {
-        const up = c.close >= c.open;
-        return {
-          time: c.time,
-          value: c.volume || 0,
-          color: up ? 'rgba(20,241,149,0.35)' : 'rgba(244,63,94,0.35)',
-        };
-      }));
-      // Leave room for volume at the bottom of the main price scale
-      chart.priceScale('right').applyOptions({
-        scaleMargins: { top: 0.08, bottom: 0.22 },
-      });
+    // Volume histogram — only when there's real non-zero volume
+    const hasVolume = candles.some(c => typeof c.volume === 'number' && c.volume > 0);
+    if (hasVolume) {
+      try {
+        const volSeries = chart.addHistogramSeries({
+          priceFormat: { type: 'volume' },
+          priceScaleId: 'volume',
+          lastValueVisible: false,
+          priceLineVisible: false,
+        });
+        chart.priceScale('volume').applyOptions({
+          scaleMargins: { top: 0.78, bottom: 0 },
+        });
+        volSeries.setData(candles.map(c => {
+          const up = c.close >= c.open;
+          return {
+            time: c.time,
+            value: c.volume || 0,
+            color: up ? 'rgba(20,241,149,0.35)' : 'rgba(244,63,94,0.35)',
+          };
+        }));
+        chart.priceScale('right').applyOptions({
+          scaleMargins: { top: 0.08, bottom: 0.22 },
+        });
+      } catch (e) {
+        console.warn('volume series skipped', e);
+      }
     }
 
     // Update "Last" price
     const lastClose = candles[candles.length - 1].close;
     const lastEl = document.getElementById('chart-last-val');
+    const activePriceEl = document.getElementById('active-price');
     if (lastEl) lastEl.textContent = formatPrice(lastClose);
+    if (activePriceEl) activePriceEl.textContent = 'SOL ' + formatPrice(lastClose);
 
     // Bollinger Bands (20, 2.0)
     const period = 20;
@@ -1679,6 +1706,33 @@ setInterval(() => {
   const pk = document.body.getAttribute('data-wallet');
   if (pk) fetchWalletBalance(pk);
 }, 15000);
+
+// --- Strategies: click to toggle on/off ---
+(function stratToggle() {
+  const list = document.getElementById('strat-list');
+  const counter = document.getElementById('stratCount');
+  if (!list) return;
+  function refreshCount() {
+    const on = list.querySelectorAll('.strat-row[data-on="1"]:not(.pro)').length;
+    const proOn = document.body.classList.contains('pro-on');
+    counter.textContent = (proOn ? 'Pro' : 'Cruise') + ' · ' + on + ' active';
+  }
+  list.querySelectorAll('.strat-row').forEach(row => {
+    row.addEventListener('click', (e) => {
+      // Don't toggle the Pro-only row unless Pro is enabled
+      if (row.classList.contains('pro') && !document.body.classList.contains('pro-on')) return;
+      const nowOn = row.getAttribute('data-on') === '1' ? '0' : '1';
+      row.setAttribute('data-on', nowOn);
+      const state = row.querySelector('.strat-state');
+      if (state && !row.classList.contains('pro')) {
+        state.className = 'strat-state ' + (nowOn === '1' ? 's-armed' : 's-off');
+        state.textContent = nowOn === '1' ? 'Armed' : 'Off';
+      }
+      refreshCount();
+    });
+  });
+  refreshCount();
+})();
 
 // --- Open Trade order ticket ---
 (function openTrade() {
