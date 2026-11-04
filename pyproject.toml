@@ -7,3 +7,7 @@ dependencies = [
     "requests>=2.31",
     "python-dotenv>=1.0",
 ]
+
+[tool.vercel]
+entrypoint = "scripts.serve_dashboard:Handler"
+include_files = ["scripts/**", "public/**"]
