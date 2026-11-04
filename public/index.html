@@ -1975,7 +1975,7 @@ async function loadChart(tf) {
     }
     const bbCommon = { lastValueVisible: true, priceLineVisible: false, crosshairMarkerVisible: false };
     chart.addLineSeries({
-      color: '#C89AFF', lineWidth: 2, lineStyle: 2,
+      color: '#C89AFF', lineWidth: 2, lineStyle: 0,
       title: 'BB upper', ...bbCommon,
     }).setData(bbU);
     chart.addLineSeries({
@@ -1983,7 +1983,7 @@ async function loadChart(tf) {
       title: 'BB mid', ...bbCommon,
     }).setData(bbM);
     chart.addLineSeries({
-      color: '#C89AFF', lineWidth: 2, lineStyle: 2,
+      color: '#C89AFF', lineWidth: 2, lineStyle: 0,
       title: 'BB lower', ...bbCommon,
     }).setData(bbL);
 
